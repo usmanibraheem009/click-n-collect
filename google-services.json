@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "579320919232",
+    "project_id": "click-n-collect-f1da2",
+    "storage_bucket": "click-n-collect-f1da2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:579320919232:android:74ca98ba31d356cf6ca925",
+        "android_client_info": {
+          "package_name": "com.example.clickncollect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "579320919232-hduds9vn3nualg831eodlrngedr31g4f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.clickncollect",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "579320919232-f8urak9gdpl5od9aj9jc8ta4u7i4faui.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhg7OGNviUw6br2JHBP9VKsNMWNShKIcQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "579320919232-f8urak9gdpl5od9aj9jc8ta4u7i4faui.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
