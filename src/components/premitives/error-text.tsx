@@ -15,8 +15,8 @@ export default ErrorText
 
 const styles = StyleSheet.create({
     text: {
-        fontSize: 14,
-        fontWeight: 500,
+        fontSize: 12,
+        fontWeight: 400,
         color: 'red'
     }
 })

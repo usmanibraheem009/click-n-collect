@@ -1,5 +1,6 @@
+import { setAuthChecked } from "@/src/redux/slices/authSlice";
 import MyStore, { persistor } from "@/src/redux/store/myStore";
-import { Stack } from "expo-router";
+import AppContent from "@/src/ui/screens/app-content";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -7,12 +8,9 @@ import { PersistGate } from "redux-persist/integration/react";
 export default function RootLayout() {
   return (
     <Provider store={MyStore}>
-      <PersistGate persistor={persistor}>
+      <PersistGate persistor={persistor} loading={null} onBeforeLift={() => {MyStore.dispatch(setAuthChecked(true))}}>
         <GestureHandlerRootView>
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          </Stack>
+          <AppContent />
         </GestureHandlerRootView>
       </PersistGate>
     </Provider>

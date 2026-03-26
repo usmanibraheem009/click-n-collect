@@ -8,7 +8,7 @@ export const lightSemanticColors: semanticColors = {
     },
     text: {
         primary: '#0000',
-        secondary: '#',
+        secondary: '#9B9B9B',
         tertiary: '#',
         disabled: '#',
         inverse: '#'
@@ -33,7 +33,7 @@ export const darkSemanticColors: semanticColors = {
     },
     text: {
         primary: '#00000',
-        secondary: '#',
+        secondary: '#9B9B9B',
         tertiary: '#',
         disabled: '#',
         inverse: '#'

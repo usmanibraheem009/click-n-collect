@@ -5,13 +5,14 @@ import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 interface btnProps{
     btnText: string,
     onPress: () => void,
+    disabled?: boolean,
 }
 
-const SimpleButton = ({btnText, onPress}: btnProps) => {
+const SimpleButton = ({btnText, onPress, disabled = false}: btnProps) => {
     const {theme} = useTheme();
 
   return (
-    <TouchableOpacity style={[styles.btnContainer , {backgroundColor: theme.surface.primary}]} onPress={onPress}>
+    <TouchableOpacity style={[styles.btnContainer , {backgroundColor: theme.surface.primary}]} onPress={onPress} disabled={disabled}>
         <Text style={styles.text}>{btnText}</Text>
     </TouchableOpacity>
   )

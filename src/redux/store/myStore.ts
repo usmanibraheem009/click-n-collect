@@ -1,29 +1,42 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { persistReducer, persistStore } from 'redux-persist';
-import AuthReducer from '../slices/authSlice';
-import ThemeReducer from '../slices/themeSlice';
+import { persistReducer, persistStore } from "redux-persist";
+
+import authReducer from "../slices/authSlice";
+import cartReducer from "../slices/cartSlice";
+import favoritesReducer from "../slices/favouriteSlice";
+import imageReducer from "../slices/imageSlice";
+import productReducer from "../slices/productSlice";
+import themeReducer from "../slices/themeSlice";
 
 const persistConfig = {
-    key: 'root',
-    storage: AsyncStorage,
-    whiteList: ['authReducer', 'themeReducer']
-}
+  key: "root",
+  storage: AsyncStorage,
+  whitelist: ["authReducer", "favoritesReducer", "cartReducer"],
+};
 
-const rootReducers = combineReducers({
-    authReducer: AuthReducer,
-    themeReducer: ThemeReducer
+const rootReducer = combineReducers({
+  authReducer,
+  themeReducer,
+  imageReducer,
+  favoritesReducer,
+  cartReducer,
+  productsReducer: productReducer,
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducers);
+const persistedReducer =
+  persistReducer(persistConfig, rootReducer);
 
 const MyStore = configureStore({
-    reducer: persistedReducer,
-    middleware: (getDefaultMiddleWare) =>
-        getDefaultMiddleWare({
-            serializableCheck: false,
-        }).concat()
+  reducer: persistedReducer,
+
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
-export const persistor = persistStore(MyStore);
+export const persistor =
+  persistStore(MyStore);
+
 export default MyStore;

@@ -2,8 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 
 export interface authUser{
-    email: string,
-    password: string,
+    id: string , 
+    email: string | null,
     userName?: string,
     profileImageUrl?: string
 };
@@ -27,7 +27,6 @@ export const authSlice = createSlice({
     reducers: {
         setUser: (state, action) => {
             state.user = action.payload;
-            state.isAuthChecked = true
         },
 
         clearUser: (state) => {

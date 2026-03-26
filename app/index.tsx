@@ -1,4 +1,4 @@
-import LoginScreen from "@/src/ui/screens/login-screen";
+import SignupScreen from "./screens/signup-screen";
 
 export default function Index() {
   return (
@@ -6,11 +6,11 @@ export default function Index() {
     //   style={{
     //     flex: 1,
     //     justifyContent: "center",
-    //     alignItems: "center",
+    //     alignItems: "center", 
     //   }}
     // >
     //   <Button title="navigate" onPress={() => {router.push('/(tabs)')}} />
     // </View>
-    <LoginScreen />
+    <SignupScreen />
   );
 }
