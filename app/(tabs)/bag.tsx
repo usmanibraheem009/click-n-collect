@@ -1,178 +1,246 @@
+import Screen from '@/src/components/layout/screen'
 import ScreenHeader from '@/src/components/layout/screen-header'
-import ScreenWrapper from '@/src/components/layout/screen-wrapper'
 import SimpleButton from '@/src/components/premitives/simple-button'
+import { useTheme } from '@/src/hooks/useTheme'
 import { removeFromCart } from '@/src/redux/slices/cartSlice'
-import { toggleFavorites } from '@/src/redux/slices/favouriteSlice'
-import { MaterialIcons } from '@expo/vector-icons'
+import { showSnackbar } from '@/src/redux/slices/snackbarSlice'
+import { RootState } from '@/src/redux/store/myStore'
+import { mS, mVs } from '@/src/utils/scale'
+import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import React, { useState } from 'react'
-import { Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useMemo } from 'react'
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
-import { Menu } from 'react-native-paper'
 import { useDispatch, useSelector } from 'react-redux'
 
 const Bag = () => {
 
-  const cartItems = useSelector((state: any) => state.cartReducer.cartItems);
-  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
-  console.log('cart items: ', cartItems);
+  const cartItems = useSelector((state: RootState) => state.cartreducer.cartItems);
   const dispatch = useDispatch();
+  const { theme } = useTheme();
 
-  const subTotal = cartItems.reduce((total: number, item :any)=> total + item.price * item.quantity , 0 );
+  const subTotal = useMemo(() =>
+    cartItems.reduce((total: number, item: any) => total + item.price * item.quantity, 0)
+    , [cartItems]);
 
-  const shippingFee = subTotal > 500? 0 : 10;
-
+  const shippingFee = cartItems ?? subTotal > 500 ? 0 : 10;
   const grandTotal = subTotal + shippingFee;
 
+  const deleteItem = (item: any) => {
+    Alert.alert('Delete Warning', 'Are you sure you want to delete this item?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Yes', style: 'destructive', onPress: () => {
+          dispatch(removeFromCart(item.id));
+          dispatch(showSnackbar({ message: 'Item removed from cart!', type: 'success' }));
+        }
+      }
+    ])
+  };
+
+  const handlePress = () => {
+    if (cartItems.length === 0) {
+      return Alert.alert('Your bag is empty', 'Please add items before proceeding to checkout.')
+    }
+    router.push({
+      pathname: '/screens/check-out',
+      params: { subTotal, shippingFee, Total: grandTotal }
+    })
+  }
 
   return (
-    <ScreenWrapper>
+    <Screen paddingHorizontal={mS(20)}>
       <ScreenHeader searchIcon />
 
-      <Text style={styles.titleText}>My Bag</Text>
-      <FlatList data={cartItems}
-        keyExtractor={(item) => `${item.id}-${item.size}-${item.color}`}
-        renderItem={({ item }) => (
-          <View style={styles.container}>
+      <Text style={[styles.titleText, { color: theme.text.primary }]}>My Bag</Text>
 
-            <View style={styles.imageContainer}>
+      <FlatList
+        data={cartItems}
+        keyExtractor={(item) => `${item.id}-${item.size}-${item.color}`}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: mVs(20) }}
+        renderItem={({ item }) => (
+          <View style={[styles.card, { backgroundColor: theme.surface.secondary }]}>
+
+            <View style={[styles.imageContainer, { backgroundColor: theme.background.primary }]}>
               <Image source={{ uri: item.image }} style={styles.prodImage} />
             </View>
 
             <View style={styles.detailsContainer}>
-              <Text style={styles.title} numberOfLines={1} ellipsizeMode='tail'>{item.title}</Text>
 
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '60%' }}>
-                <Text style={styles.key}>Color: </Text>
-                <Text style={styles.value}>{item.color}</Text>
-                <Text style={styles.key}>Size: </Text>
-                <Text style={styles.value}>{item.size}</Text>
-              </View>
-
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <View style={{ flexDirection: 'row', gap: 20, alignItems: 'center' }}>
-                  <TouchableOpacity style={styles.counterButton}><Text style={styles.counter}>+</Text></TouchableOpacity>
-                  <Text style={{ fontSize: 18, fontWeight: 500 }}>{item.quantity}</Text>
-                  <TouchableOpacity style={styles.counterButton}><Text style={styles.counter}>-</Text></TouchableOpacity>
-                </View>
-                <Text style={styles.price} >{item.price} $</Text>
-              </View>
-            </View>
-
-            <View >
-              <Menu
-                visible={activeMenuId === item.id}
-                onDismiss={() => { setActiveMenuId(null) }}
-                anchor={
-                  <Pressable onPress={() => { setActiveMenuId(item.id) }} style={{ justifyContent: 'flex-start', marginTop: 10 }}>
-                    <MaterialIcons name="more-vert" size={24} />
-                  </Pressable>
-                }
+              <Text
+                style={[styles.title, { color: theme.text.primary }]}
+                numberOfLines={2}
+                ellipsizeMode='tail'
               >
-                <Menu.Item onPress={() => {
-                  setActiveMenuId(null);
-                  dispatch(toggleFavorites(item))
-                }}
-                  title="Add to favorites"
-                />
-                <Menu.Item onPress={() => { dispatch(removeFromCart(item.id,)) }}
-                  title="Delete from the list"
-                />
-              </Menu>
+                {item.title}
+              </Text>
+
+              <View style={styles.attributeRow}>
+                <Text style={[styles.key, { color: theme.text.disabled }]}>Color: </Text>
+                <Text style={[styles.value, { color: theme.text.primary }]}>{item.color}</Text>
+              </View>
+              <View style={styles.attributeRow}>
+                <Text style={[styles.key, { color: theme.text.disabled }]}>Size: </Text>
+                <Text style={[styles.value, { color: theme.text.primary }]}>{item.size}</Text>
+              </View>
+
+              <View style={styles.bottomRow}>
+                <Text style={[styles.price, { color: theme.text.primary }]}>
+                  ${item.price.toFixed(2)}
+                </Text>
+                <View style={styles.counter}>
+                  <Ionicons name='remove-circle-outline' size={mS(26)} color={theme.surface.primary} />
+                  <Text style={[styles.quantity, { color: theme.text.primary }]}>{item.quantity}</Text>
+                  <Ionicons name='add-circle-outline' size={mS(26)} color={theme.surface.primary} />
+                </View>
+              </View>
+
             </View>
+
+            <Pressable
+              style={styles.trashIcon}
+              onPress={() => deleteItem(item)}
+            >
+              <Ionicons name='trash' size={mS(24)} color={theme.text.secondary} />
+            </Pressable>
 
           </View>
-        )}>
-      </FlatList >
+        )}
+      />
 
-
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
-        <Text style={styles.checkout}>Total amount: </Text>
-        <Text style={styles.price}>{grandTotal}$</Text>
+      <View style={[styles.summaryContainer, { borderTopColor: theme.surface.secondary }]}>
+        <View style={styles.summaryRow}>
+          <Text style={[styles.summaryLabel, { color: theme.text.disabled }]}>Subtotal</Text>
+          <Text style={[styles.summaryValue, { color: theme.text.primary }]}>${subTotal.toFixed(2)}</Text>
+        </View>
+        <View style={styles.summaryRow}>
+          <Text style={[styles.summaryLabel, { color: theme.text.disabled }]}>Shipping</Text>
+          <Text style={[styles.summaryValue, { color: theme.text.primary }]}>
+            {shippingFee === 0 ? 'Free' : `$${shippingFee.toFixed(2)}`}
+          </Text>
+        </View>
+        <View style={styles.summaryRow}>
+          <Text style={[styles.totalLabel, { color: theme.text.primary }]}>Total</Text>
+          <Text style={[styles.totalValue, { color: '#FF4B4B' }]}>${grandTotal.toFixed(2)}</Text>
+        </View>
       </View>
-      <SimpleButton btnText='CHECKOUT' onPress={() => { router.push({
-        pathname: '/screens/check-out',
-        params: {
-          subTotal: subTotal,
-          shippingFee: shippingFee,
-          Total: grandTotal
-        }
-      })}} />
-    </ScreenWrapper >
+
+      <SimpleButton btnText='CHECKOUT' onPress={handlePress} />
+    </Screen>
   )
 }
 
 export default Bag
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 20,
-    height: 120,
-    width: '100%',
-    borderRadius: 10,
-    flexDirection: 'row',
-    backgroundColor: 'white'
-  },
   titleText: {
-    fontSize: 34,
+    fontSize: mS(34),
     fontWeight: 'bold',
+    marginBottom: mVs(10),
+  },
+  card: {
+    marginTop: mVs(14),
+    width: '100%',
+    borderRadius: mS(16),
+    flexDirection: 'row',
+    padding: mS(12),
+    alignSelf: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    gap: mS(10),
+  },
+  imageContainer: {
+    height: mVs(130),
+    width: mS(100),
+    borderRadius: mS(12),
+    overflow: 'hidden',
+    flexShrink: 0,
   },
   prodImage: {
     height: '100%',
     width: '100%',
     resizeMode: 'contain',
   },
-  imageContainer: {
-    height: 120,
-    width: '32%',
-    backgroundColor: 'lightgrey',
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
-    padding: 10
-  },
   detailsContainer: {
-    gap: 10,
-    padding: 10,
-    width: '60%'
+    flex: 1,
+    gap: mVs(6),
+    justifyContent: 'center',
   },
   title: {
-    fontSize: 16,
-    fontWeight: 500,
-    overflow: 'hidden',
+    fontSize: mS(14),
+    fontWeight: '600',
+    lineHeight: mVs(20),
+    maxWidth: '90%',
+    paddingRight: mS(8),
+  },
+  attributeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   key: {
-    color: 'grey',
-    fontSize: 12,
+    fontSize: mS(12),
+    fontWeight: '500',
   },
   value: {
-    fontSize: 12
+    fontSize: mS(12),
+    fontWeight: '600',
   },
-  counterButton: {
-    height: 40,
-    width: 40,
-    borderRadius: 50,
-    backgroundColor: 'white',
-    elevation: 4,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  counter: {
-    fontSize: 28,
-    fontWeight: 600,
-    color: 'grey'
+  bottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: mVs(4),
   },
   price: {
-    fontSize: 14,
-    fontWeight: 500,
+    fontSize: mS(18),
+    fontWeight: '700',
   },
-  menuButton: {
+  counter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: mS(8),
+  },
+  quantity: {
+    fontSize: mS(16),
+    fontWeight: '600',
+    minWidth: mS(16),
+    textAlign: 'center',
+  },
+  trashIcon: {
     position: 'absolute',
-    right: 5,
-    top: 5,
-    color: 'grey'
+    top: mVs(12),
+    right: mS(12),
   },
-  checkout: {
-    fontSize: 16,
-    color: 'grey'
-  }
+  summaryContainer: {
+    borderTopWidth: 1,
+    paddingTop: mVs(16),
+    marginTop: mVs(10),
+    marginBottom: mVs(16),
+    gap: mVs(8),
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  summaryLabel: {
+    fontSize: mS(14),
+    fontWeight: '500',
+  },
+  summaryValue: {
+    fontSize: mS(14),
+    fontWeight: '600',
+  },
+  totalLabel: {
+    fontSize: mS(16),
+    fontWeight: '700',
+  },
+  totalValue: {
+    fontSize: mS(18),
+    fontWeight: '700',
+  },
 })

@@ -1,17 +1,21 @@
+import { useTheme } from '@/src/hooks/useTheme'
 import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { SvgProps } from 'react-native-svg'
 
-interface btnProps{
+interface btnProps {
     SvgImage: React.FC<SvgProps>
 }
 
 const SocialButton = ({ SvgImage }: btnProps) => {
-  return (
-    <TouchableOpacity style={styles.container}>
-        <SvgImage height={24} width={24}/>
-    </TouchableOpacity>
-  )
+
+    const { theme } = useTheme();
+
+    return (
+        <TouchableOpacity style={[styles.container, { backgroundColor: theme.surface.secondary }]}>
+            <SvgImage height={24} width={24} />
+        </TouchableOpacity>
+    )
 }
 
 export default SocialButton
@@ -21,7 +25,6 @@ const styles = StyleSheet.create({
         height: '23%',
         width: '35%',
         padding: 30,
-        backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 24,

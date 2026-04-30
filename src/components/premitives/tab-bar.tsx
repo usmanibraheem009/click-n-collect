@@ -1,17 +1,17 @@
-import useTheme from '@/src/hooks/useTheme'
+import { useTheme } from '@/src/hooks/useTheme'
 import { MaterialIcons } from '@expo/vector-icons'
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-const TabBar = ({title, subTitle, onPress}: {title: string, subTitle: string, onPress: () => void}) => {
+const TabBar = ({ title, subTitle, onPress }: { title: string, subTitle: string, onPress: () => void }) => {
 
-  const {theme} = useTheme();
+  const { theme } = useTheme();
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.textContainer}>
         <Text style={styles.title}>{title}</Text>
-        <Text style={[styles.subTitle, {color: theme.text.secondary}]}>{subTitle}</Text>
+        <Text style={[styles.subTitle, { color: theme.text.secondary }]}>{subTitle}</Text>
       </View>
       <MaterialIcons name='keyboard-arrow-right' size={24} color={theme.text.secondary} />
     </TouchableOpacity>

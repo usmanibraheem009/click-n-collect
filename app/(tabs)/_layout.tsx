@@ -1,38 +1,32 @@
-import { FontAwesome, Fontisto, MaterialIcons } from '@expo/vector-icons'
+import { useTheme } from '@/src/hooks/useTheme'
+import { mVs } from '@/src/utils/scale'
+import { Ionicons } from '@expo/vector-icons'
 import { Tabs } from 'expo-router'
 import React from 'react'
 import { Provider } from 'react-native-paper'
 
 const _layout = () => {
+
+    const { theme } = useTheme();
+
     return (
         <Provider>
-            <Tabs screenOptions={{ headerShown: false }}>
-                <Tabs.Screen name='index' options={{
-                    title: 'Home', tabBarIcon: ({ color }) => (
-                        < FontAwesome name='home' color={color} size={24} />
-                    )
-                }} />
-                <Tabs.Screen name='shop' options={{
-                    title: 'Shop', tabBarIcon: ({ color }) => (
-                        <MaterialIcons name='shopping-cart' color={color} size={24} />
-                    )
-                }} />
-                <Tabs.Screen name='bag' options={{
-                    title: 'Bag', tabBarIcon: ({ color }) => (
-                        <Fontisto name='shopping-bag' color={color} size={24} />
-                    )
-                }} />
-                <Tabs.Screen name='favorites' options={{
-                    title: 'Favorites', tabBarIcon: ({ color }) => (
-                        <FontAwesome name='heart' color={color} size={24} />
-                    )
-                }} />
-                <Tabs.Screen name='profile' options={{
-                    title: 'Profile', tabBarIcon: ({ color }) => (
-                        <FontAwesome name='user' color={color} size={24} />
-                    ), tabBarStyle: {}
-                }} />
-
+            <Tabs screenOptions={{
+                headerShown: false,
+                tabBarStyle: {
+                    backgroundColor: theme.background.primary,
+                    borderTopColor: 'transparent',
+                    height: mVs(70),
+                    paddingTop: 5
+                },
+                tabBarActiveTintColor: theme.surface.primary,
+                tabBarInactiveTintColor: theme.text.disabled
+            }}>
+                <Tabs.Screen name='index' options={{ title: 'Home', tabBarIcon: ({ color, focused }) => (< Ionicons name={focused ? 'home' : 'home-outline'} color={color} size={24} />) }} />
+                <Tabs.Screen name='shop' options={{ title: 'Shop', tabBarIcon: ({ color, focused }) => (<Ionicons name={focused ? 'cart' : 'cart-outline'} color={color} size={24} />) }} />
+                <Tabs.Screen name='bag' options={{ title: 'Bag', tabBarIcon: ({ color, focused }) => (<Ionicons name={focused ? 'bag-handle' : 'bag-handle-outline'} color={color} size={24} />) }} />
+                <Tabs.Screen name='favorites' options={{ title: 'Favorites', tabBarIcon: ({ color, focused }) => (<Ionicons name={focused ? 'heart' : 'heart-outline'} color={color} size={24} />) }} />
+                <Tabs.Screen name='profile' options={{ title: 'Profile', tabBarIcon: ({ color, focused }) => (<Ionicons name={focused ? 'person' : 'person-outline'} color={color} size={24} />), }} />
             </Tabs>
         </Provider>
     )

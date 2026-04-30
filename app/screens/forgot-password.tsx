@@ -1,3 +1,3 @@
-import ForgotPassword from "@/src/ui/screens/forgot-password";
+import ForgotPassword from "@/src/ui/screens/auth/forgot-password";
 
 export default ForgotPassword;

@@ -1,6 +1,6 @@
 export type ThemeMode = 'light' | 'dark' | 'system';
 
-export interface ColorScale{
+export interface ColorScale {
     50: string,
     100: string,
     200: string,
@@ -18,7 +18,7 @@ export interface semanticColors {
     background: {
         primary: string,
         secondary: string,
-        tertiary: String,
+        tertiary: string,
     },
     text: {
         primary: string,
@@ -41,16 +41,16 @@ export interface semanticColors {
 }
 
 export interface ThemeColors extends semanticColors {
-  primary: ColorScale;
-  secondary: ColorScale;
-  neutral: ColorScale;
-  success: ColorScale;
-  warning: ColorScale;
-  error: ColorScale;
-  option: ColorScale;
+    primary: ColorScale;
+    secondary: ColorScale;
+    neutral: ColorScale;
+    success: ColorScale;
+    warning: ColorScale;
+    error: ColorScale;
+    option: ColorScale;
 }
 
-export interface TextStyle{
+export interface TextStyle {
     fontSize: number,
     letterSpacing: number,
     lineHeight: number,
@@ -58,7 +58,7 @@ export interface TextStyle{
     fontWeight: FontWeight
 };
 
-export interface Typography{
+export interface Typography {
     displayLarge: TextStyle,
     displayMedium: TextStyle,
     displaySmall: TextStyle,
@@ -78,8 +78,8 @@ export interface Typography{
     actionLarge: TextStyle,
 };
 
-export type FontWeight = 
-| 'regular'
-| 'semibold'
-| 'bold'
-| 'black'
+export type FontWeight =
+    | 'regular'
+    | 'semibold'
+    | 'bold'
+    | 'black'

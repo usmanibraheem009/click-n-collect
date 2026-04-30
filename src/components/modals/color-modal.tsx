@@ -1,35 +1,45 @@
-import { Ionicons } from '@expo/vector-icons'
-import React from 'react'
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import SimpleButton from '../premitives/simple-button'
+import { useTheme } from '@/src/hooks/useTheme';
+import { mS, mVs } from '@/src/utils/scale';
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import SimpleButton from '../premitives/simple-button';
 
-interface colorModalProps{
+interface colorModalProps {
     visible: boolean,
     colors: string[],
     onSelect: (color: string) => void,
-    onClose: ()=> void
+    onClose: () => void
 }
 
-const ColorModal = ({visible, colors, onClose, onSelect}: colorModalProps) => {
-  return (
-    <Modal visible={visible} transparent animationType='slide' >
-        <View style={styles.overlay}>
-            <View style={styles.modal}>
-                <Ionicons name='close-circle-outline' style={styles.closeButton} onPress={() => onClose()} />
-                <Text style={styles.title}>Select Color</Text>
-                <View style={styles.container}>
-                    {colors.map((color) => (
-                        <TouchableOpacity key={color} onPress={() => {onSelect(color); onClose()}} style={styles.buttons}>
-                            <Text>{color}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
+const ColorModal = ({ visible, colors, onClose, onSelect }: colorModalProps) => {
 
-                <SimpleButton btnText='ADD TO CART' onPress={() => {}} />
+    const { theme } = useTheme();
+
+    return (
+        <Modal visible={visible} transparent animationType='slide'>
+            <View style={styles.overlay}>
+                <View style={[styles.modal, { backgroundColor: theme.background.primary }]}>
+                    <TouchableOpacity onPress={() => onClose()}>
+                        <Ionicons name='close-circle-outline' style={styles.subTitle} color={theme.text.primary} />
+                    </TouchableOpacity>
+                    <Text style={[styles.title, { color: theme.text.primary }]}>Select Color</Text>
+                    <View style={styles.container}>
+                        {colors.map((color) => (
+                            <TouchableOpacity
+                                key={color}
+                                onPress={() => { onSelect(color); onClose() }}
+                                style={[styles.buttons, { backgroundColor: theme.background.primary, borderColor: theme.border.primary }]}
+                            >
+                                <Text style={[styles.btnText, { color: theme.text.primary }]}>{color}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                    <SimpleButton btnText='ADD TO CART' onPress={() => { }} />
+                </View>
             </View>
-        </View>
-    </Modal>
-  )
+        </Modal>
+    )
 }
 
 export default ColorModal
@@ -41,35 +51,38 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     modal: {
-        backgroundColor: 'white',
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        padding: 20,
+        padding: mS(20),
+        borderTopLeftRadius: mS(30),
+        borderTopRightRadius: mS(30),
     },
     container: {
         flexDirection: 'row',
-        gap: 10,
+        gap: mVs(20),
         flexWrap: 'wrap',
-        marginVertical: 20
+        marginVertical: mVs(20),
+        justifyContent: 'center',
     },
     title: {
-        fontSize: 20,
-        fontWeight: 500,
-        alignSelf: 'center'
+        alignSelf: 'center',
+        fontSize: mS(20),
+        fontWeight: 'bold',
     },
     subTitle: {
-
+        alignSelf: 'flex-end',
+        fontSize: mS(30),
+        fontWeight: 'bold',
     },
     buttons: {
-        height: 40,
-        width: 100,
+        height: mVs(40),
+        width: mS(100),
+        borderRadius: 10,
+        padding: 10,
+        borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10,
-        borderWidth: 1
     },
-    closeButton: {
-        alignSelf: 'flex-end',
-        fontSize: 30,
+    btnText: {
+        fontSize: mS(14),
+        fontWeight: '400',
     }
 })

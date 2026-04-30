@@ -1,4 +1,4 @@
-import useTheme from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/hooks/useTheme';
 import { Stack } from 'expo-router';
 import React from 'react';
 

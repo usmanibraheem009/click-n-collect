@@ -1,5 +1,6 @@
-import useTheme from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/hooks/useTheme';
 import { setImage } from '@/src/redux/slices/imageSlice';
+import { RootState } from '@/src/redux/store/myStore';
 import { db } from '@/src/services/firebaseConfig';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -10,8 +11,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 
 const UserCard = () => {
-    const profileImageUrl = useSelector((state: any) => state.imageReducer.imageUrl);
-    const user = useSelector((state: any) => state.authReducer.user);
+    const profileImageUrl = useSelector((state: RootState) => state.imagereducer.imageUrl);
+    const user = useSelector((state: RootState) => state.authreducer.user);
     const { theme } = useTheme();
     const dispatch = useDispatch();
 
@@ -24,7 +25,7 @@ const UserCard = () => {
 
         if (!result.canceled) {
             dispatch(setImage(result?.assets[0].uri));
-            await updateDoc(doc(db, 'users', user.id), {
+            await updateDoc(doc(db, 'users', user!.id), {
                 profileImage: profileImageUrl
             });
         }
@@ -34,7 +35,7 @@ const UserCard = () => {
         <View style={styles.userCard}>
             <TouchableOpacity style={styles.imageContainer} onPress={pickImage}>
                 {profileImageUrl ? (
-                    <Image source={{ uri: profileImageUrl }} style={styles.image}/>
+                    <Image source={{ uri: profileImageUrl }} style={styles.image} />
                 ) : (
                     <View >
                         <FontAwesome name='camera' size={24} />

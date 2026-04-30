@@ -8,7 +8,7 @@ import { Formik } from 'formik'
 import React from 'react'
 import { Alert, StyleSheet, Text, View } from 'react-native'
 import * as Yup from 'yup'
-import AuthHeader from '../components/auth-header'
+import AuthHeader from '../../components/auth-header'
 
 const ForgotPassword = () => {
 
@@ -22,7 +22,7 @@ const ForgotPassword = () => {
 
   const submitFunc = async (values: any) => {
     try {
-      console.log(`reset email sent to ${values.email}` )
+      console.log(`reset email sent to ${values.email}`)
       await sendPasswordResetEmail(auth, values.email);
       Alert.alert('Success',
         'A password reset email has been sent. Check your inbox.');

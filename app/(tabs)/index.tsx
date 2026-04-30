@@ -1,28 +1,27 @@
-import ScreenWrapper from '@/src/components/layout/screen-wrapper'
+import LoadingIndicator from '@/src/components/layout/loading-indicator'
+import Screen from '@/src/components/layout/screen'
 import ProductCard from '@/src/components/premitives/product-card'
-import useTheme from '@/src/hooks/useTheme'
-import { setLoading } from '@/src/redux/slices/authSlice'
+import { useTheme } from '@/src/hooks/useTheme'
 import { setProductsByCategory } from '@/src/redux/slices/productSlice'
+import { showSnackbar } from '@/src/redux/slices/snackbarSlice'
+import { AppDispatch, RootState } from '@/src/redux/store/myStore'
 import { getCategories, getProductsByCategory } from '@/src/services/api/product-api'
 import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { FlatList, Image, SectionList, StyleSheet, Text, View } from 'react-native'
+import { FlatList, SectionList, StyleSheet, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 
 const Index = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [sections, setSections] = useState<any[]>([]);
   const { theme } = useTheme();
-  const favorites = useSelector((state: any) => state.favoritesReducer.favorites);
-  console.log('favorites: ',favorites)
-
-  // useEffect(() => {
-  //   dispatch(clearFavorites())
-  // }, []);
+  const [loading, setLoading] = useState(false);
+  const favorites = useSelector((state: RootState) => state.favoritesreducer.favorites);
+  console.log('favorites: ', favorites)
 
   const fetchData = async () => {
     try {
-      dispatch(setLoading(true));
+      setLoading(true);
       const cats = await getCategories();
       const sectionsData = [];
 
@@ -37,10 +36,10 @@ const Index = () => {
       }
 
       setSections(sectionsData);
-    } catch (error) {
-      console.log('fetch error', error);
+    } catch (error: any) {
+      dispatch(showSnackbar({ message: error, type: 'error' }));
     } finally {
-      dispatch(setLoading(false));
+      setLoading(false);
     }
   };
 
@@ -61,13 +60,12 @@ const Index = () => {
   })
 
   const renderCategoryItems = ({ item }: any) => (
-    <ProductCard item={item} onPress={handleSubmit} showRating />
+    <ProductCard item={item} onPress={handleSubmit} />
   )
-
 
   const renderSection = ({ section }: any) => (
     <View style={{ marginVertical: 10 }}>
-      <Text style={styles.sectionHeader}>{section.title}</Text>
+      <Text style={[styles.sectionHeader, { backgroundColor: theme.background.primary, color: theme.text.primary }]}>{(section.title)}</Text>
       <FlatList
         data={section.data}
         keyExtractor={(item) => item.id.toString()}
@@ -79,23 +77,22 @@ const Index = () => {
     </View>
   );
 
+  if (loading) {
+    return (
+      <LoadingIndicator />
+    )
+  }
+
   return (
-    <ScreenWrapper backgroundColor='white'>
+    <Screen>
       <SectionList
         sections={sections}
         keyExtractor={(item, index) => item.id.toString() + index}
         renderItem={() => null}
         renderSectionHeader={renderSection}
         stickySectionHeadersEnabled={false}
-        ListHeaderComponent={
-          <Image
-            source={require('../../assets/images/banner.png')}
-            style={styles.banner}
-            resizeMode="cover"
-          />
-        }
       />
-    </ScreenWrapper >
+    </Screen >
   );
 };
 
@@ -107,12 +104,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     paddingVertical: 10,
     paddingHorizontal: 15,
-    backgroundColor: '#fff',
+    textTransform: 'uppercase'
   },
   productContainer: {
     marginRight: 55,
     width: 120,
-    gap: 7
+    gap: 10
   },
   imageStyle: {
     height: '100%',

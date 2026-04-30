@@ -7,6 +7,7 @@ import cartReducer from "../slices/cartSlice";
 import favoritesReducer from "../slices/favouriteSlice";
 import imageReducer from "../slices/imageSlice";
 import productReducer from "../slices/productSlice";
+import snackbarReducer from "../slices/snackbarSlice";
 import themeReducer from "../slices/themeSlice";
 
 const persistConfig = {
@@ -16,12 +17,13 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  authReducer,
-  themeReducer,
-  imageReducer,
-  favoritesReducer,
-  cartReducer,
-  productsReducer: productReducer,
+  authreducer: authReducer,
+  themereducer: themeReducer,
+  imagereducer: imageReducer,
+  favoritesreducer: favoritesReducer,
+  cartreducer: cartReducer,
+  productsreducer: productReducer,
+  snackbarreducer: snackbarReducer,
 });
 
 const persistedReducer =
@@ -36,7 +38,8 @@ const MyStore = configureStore({
     }),
 });
 
-export const persistor =
-  persistStore(MyStore);
+export const persistor = persistStore(MyStore);
+export type RootState = ReturnType<typeof MyStore.getState>;
+export type AppDispatch = typeof MyStore.dispatch;
 
 export default MyStore;

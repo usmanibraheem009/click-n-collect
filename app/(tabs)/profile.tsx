@@ -3,6 +3,7 @@ import SimpleButton from '@/src/components/premitives/simple-button'
 import TabBar from '@/src/components/premitives/tab-bar'
 import UserCard from '@/src/components/premitives/user-card'
 import { clearUser } from '@/src/redux/slices/authSlice'
+import { AppDispatch } from '@/src/redux/store/myStore'
 import { logout } from '@/src/services/firebase/auth-services'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
@@ -10,7 +11,7 @@ import { useDispatch } from 'react-redux'
 
 const profile = () => {
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const logoutUser = async () => {
     await logout();

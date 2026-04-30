@@ -1,4 +1,4 @@
-import useTheme from '@/src/hooks/useTheme'
+import { useTheme } from '@/src/hooks/useTheme'
 import React, { ReactNode } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -22,8 +22,8 @@ const ScreenWrapper = ({
     keyboardAvoidingView = true
 }: screenWrapperProps) => {
 
-    const {theme} = useTheme();
-    
+    const { theme } = useTheme();
+
     const bgColor = backgroundColor || theme.background.primary
     const insets = useSafeAreaInsets()
 
@@ -67,7 +67,7 @@ const ScreenWrapper = ({
         return (
             <KeyboardAvoidingView style={[styles.keyboardAvoiding, { backgroundColor: bgColor }]}
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-                    {content}
+                {content}
             </KeyboardAvoidingView>
         )
     };
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
     },
-    scrollContent:{ 
+    scrollContent: {
         flexGrow: 1
     }
 });

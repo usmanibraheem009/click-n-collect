@@ -1,28 +1,34 @@
-import useTheme from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/hooks/useTheme';
+import { mVs } from '@/src/utils/scale';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 
-interface btnProps{
+interface btnProps {
     btnText: string,
     onPress: () => void,
     disabled?: boolean,
+    isLoading?: boolean
 }
 
-const SimpleButton = ({btnText, onPress, disabled = false}: btnProps) => {
-    const {theme} = useTheme();
+const SimpleButton = ({ btnText, onPress, isLoading, disabled = false }: btnProps) => {
+    const { theme } = useTheme();
 
-  return (
-    <TouchableOpacity style={[styles.btnContainer , {backgroundColor: theme.surface.primary}]} onPress={onPress} disabled={disabled}>
-        <Text style={styles.text}>{btnText}</Text>
-    </TouchableOpacity>
-  )
+    return (
+        <TouchableOpacity style={[styles.btnContainer, { backgroundColor: theme.surface.primary }]} onPress={onPress} disabled={isLoading || disabled}>
+            {isLoading ?
+                <ActivityIndicator size={'large'} color={theme.text.primary} /> :
+                <Text style={styles.text}>{btnText}</Text>
+            }
+        </TouchableOpacity>
+    )
 }
 
 export default SimpleButton
 
 const styles = StyleSheet.create({
     btnContainer: {
-        height: 50,
+        height: mVs(60),
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
@@ -31,8 +37,8 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     text: {
-        fontSize: 16,
-        fontWeight: 400,
+        fontSize: mVs(16),
+        fontWeight: '500',
         color: 'white'
     }
 })

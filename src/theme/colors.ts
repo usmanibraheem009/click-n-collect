@@ -2,51 +2,51 @@ import { semanticColors } from "./types";
 
 export const lightSemanticColors: semanticColors = {
     background: {
-        primary: '#F9F9F9',
-        secondary: '#',
-        tertiary: '#',
+        primary: '#FAFAF8',
+        secondary: '#FFFF',
+        tertiary: '#E5E7EB',
     },
     text: {
-        primary: '#0000',
-        secondary: '#9B9B9B',
+        primary: '#111827',
+        secondary: '#909090',
         tertiary: '#',
-        disabled: '#',
-        inverse: '#'
+        disabled: '#9E9E9E',
+        inverse: '#FF7B7B'
     },
     surface: {
-        primary: '#DB3022',
-        secondary: '#ffff',
-        tertiary: '#',
+        primary: '#FF6B6B',
+        secondary: '#F5F5F3',
+        tertiary: '#FFFF',
     },
     border: {
-        primary: '#',
-        secondary: '#',
-        tertiary: '#'
-    }
+        primary: '#FF6B6B',
+        secondary: '#EAEDF2',
+        tertiary: '#9ABDF8',
+    },
 };
 
 export const darkSemanticColors: semanticColors = {
     background: {
-        primary: '#F9F9F9',
-        secondary: '#',
-        tertiary: '#',
+        primary: '#0F1319',
+        secondary: '#1A1F2B',
+        tertiary: '#374151'
     },
     text: {
-        primary: '#00000',
-        secondary: '#9B9B9B',
-        tertiary: '#',
-        disabled: '#',
-        inverse: '#'
+        primary: '#F9FAFB',
+        secondary: '#919191',
+        tertiary: '#E8E8E5',
+        disabled: '#9E9E9E',
+        inverse: '#FF7B7B'
     },
     surface: {
-        primary: '#DB3022',
-        secondary: '#ffff',
-        tertiary: '#',
+        primary: '#FF6B6B',
+        secondary: '#2A2A2A',
+        tertiary: '#1E1E1E',
     },
     border: {
-        primary: '#',
-        secondary: '#',
-        tertiary: '#'
+        primary: '#FF6B6B',
+        secondary: '#282F3D',
+        tertiary: '#254A87',
     }
 };
 
@@ -58,68 +58,3 @@ export interface themeColors extends semanticColors {
     warning: string,
     error: string
 }
-
-
-
-//////////////////////////////////////////////////////////////
-
-// import { semanticColors } from "./types";
-
-// export const lightSemanticColors: semanticColors = {
-//     background: {
-//         primary: '#F9F9F9',
-//         secondary: '#',
-//         tertiary: '#',
-//     },
-//     text: {
-//         primary: '#0000',
-//         secondary: '#F31D1D',
-//         tertiary: '#4DB947',
-//         disabled: '#888888',
-//         inverse: '#ffff'
-//     },
-//     surface: {
-//         primary: '#4DB947',
-//         secondary: '#E8EAE8',
-//         tertiary: '#FA1228',
-//     },
-//     border: {
-//         primary: '#',
-//         secondary: '#',
-//         tertiary: '#'
-//     }
-// };
-
-// export const darkSemanticColors: semanticColors = {
-//     background: {
-//         primary: '#F9F9F9',
-//         secondary: '#F2F2F2',
-//         tertiary: '#ECECEC',
-//     },
-//     text: {
-//         primary: '#ffff ',
-//         secondary: '#F31D1D',
-//         tertiary: '#4DB947',
-//         disabled: '#888888',
-//         inverse: '#ffff'
-//     },
-//     surface: {
-//         primary: '#4DB947',
-//         secondary: '#ffff',
-//         tertiary: '#FA1228',
-//     },
-//     border: {
-//         primary: '#',
-//         secondary: '#',
-//         tertiary: '#'
-//     }
-// };
-
-// export interface themeColors extends semanticColors {
-//     primary: string,
-//     secondary: string,
-//     neutral: string,
-//     success: string,
-//     warning: string,
-//     error: string
-// }
