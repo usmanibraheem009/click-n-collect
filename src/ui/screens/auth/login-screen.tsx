@@ -47,10 +47,10 @@ const LoginScreen = () => {
       <Formik initialValues={initialValues.login} validationSchema={validationSchema.login} onSubmit={submitFunc}>
         {({ values, handleChange, errors, touched, handleSubmit }: any) => (
           <View style={styles.container}>
-            <InputTab value={values.email} onChangeText={handleChange('email')} placeHolderText='Email' />
+            <InputTab value={values.email} onChangeText={handleChange('email')} placeholder='Email' />
             {touched.email && errors.email && (<ErrorText errorText={errors.email} />)}
 
-            <InputTab value={values.password} onChangeText={handleChange('password')} secureTextEntry placeHolderText='Password' />
+            <InputTab value={values.password} onChangeText={handleChange('password')} secureTextEntry placeholder='Password' />
             {touched.password && errors.password && (<ErrorText errorText={errors.password} />)}
 
             <TouchableOpacity onPress={() => { router.push('/screens/forgot-password') }} style={styles.forgotPassword}>

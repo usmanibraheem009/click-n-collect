@@ -50,16 +50,16 @@ const SignupScreen = () => {
       <Formik initialValues={initialValues.signup} validationSchema={validationSchema.signup} onSubmit={submitFunc}>
         {({ values, errors, handleChange, touched, handleSubmit }: any) => (
           <View style={styles.container}>
-            <InputTab value={values.name} onChangeText={handleChange('name')} placeHolderText='Name' />
+            <InputTab value={values.name} onChangeText={handleChange('name')} placeholder='Name' />
             {touched.name && errors.name && (<ErrorText errorText={errors.name} />)}
 
-            <InputTab value={values.email} onChangeText={handleChange('email')} placeHolderText='Email' />
+            <InputTab value={values.email} onChangeText={handleChange('email')} placeholder='Email' />
             {touched.email && errors.email && (<ErrorText errorText={errors.email} />)}
 
-            <InputTab value={values.password} secureTextEntry onChangeText={handleChange('password')} placeHolderText='Password' />
+            <InputTab value={values.password} secureTextEntry onChangeText={handleChange('password')} placeholder='Password' />
             {touched.password && errors.password && (<ErrorText errorText={errors.password} />)}
 
-            <InputTab value={values.confirmPassword} secureTextEntry onChangeText={handleChange('confirmPassword')} placeHolderText='Confirm Password' />
+            <InputTab value={values.confirmPassword} secureTextEntry onChangeText={handleChange('confirmPassword')} placeholder='Confirm Password' />
             {touched.password && errors.password && (<ErrorText errorText={errors.confirmPassword} />)}
 
             <TouchableOpacity onPress={() => { router.push('/screens/login-screen') }} style={styles.router}>

@@ -2,32 +2,38 @@ import { useTheme } from '@/src/hooks/useTheme';
 import { mS, mVs } from '@/src/utils/scale';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
 
-interface inputProps {
-  value: string,
-  onChangeText: () => void,
-  placeHolderText: string,
-  secureTextEntry?: boolean,
-  tarilingIcon?: React.ReactNode;
+interface inputTabProps extends TextInputProps {
+  icon?: React.ReactNode,
+  onIconPress?: () => void,
+  centerAlign?: boolean,
+  numberOfLines?: number,
+  multiline?: boolean
 }
 
-const InputTab = (data: inputProps) => {
+const InputTab = ({ icon, placeholder, value, multiline = false, numberOfLines, style, onIconPress, onChangeText, centerAlign, ...props }: inputTabProps) => {
 
   const { theme } = useTheme();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const isPasswordField = data.secureTextEntry
+  const isPasswordField = props.secureTextEntry
+  const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.surface.secondary }]}>
+    <View style={[styles.container, { backgroundColor: theme.surface.secondary, borderColor: isFocused ? theme.border.tertiary : 'transparent' }]}>
       <TextInput
-        placeholder={data.placeHolderText}
-        value={data.value}
-        onChangeText={data.onChangeText}
-        cursorColor={theme.text.primary}
-        placeholderTextColor={theme.text.disabled}
-        secureTextEntry={isPasswordField && !isPasswordVisible}
-        style={[styles.inputStyle, { color: theme.text.primary }]}
+        value={value}
+        numberOfLines={numberOfLines}
+        multiline={multiline}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor={theme.text.secondary}
+        cursorColor={'#B0B5BC'}
+
+        style={[styles.textInput, { color: theme.text.primary, textAlign: centerAlign ? 'center' : 'left' }]}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        {...props}
       />
       {isPasswordField && (
         <TouchableOpacity onPress={() => { setIsPasswordVisible(prev => !prev) }} style={styles.iconContainer}>
@@ -44,10 +50,10 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: mS(10),
     elevation: 1,
     paddingHorizontal: mS(20),
-
+    borderWidth: 1
   },
   inputStyle: {
     flex: 1,
@@ -58,6 +64,11 @@ const styles = StyleSheet.create({
     paddingLeft: mS(10),
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  textInput: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: mVs(18)
   }
 });
 

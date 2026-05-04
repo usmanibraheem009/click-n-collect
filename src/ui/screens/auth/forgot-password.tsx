@@ -48,7 +48,7 @@ const ForgotPassword = () => {
       <Formik initialValues={initialValue} validationSchema={validationSchema} onSubmit={submitFunc}>
         {({ errors, touched, handleChange, handleSubmit, values }: any) => (
           <View>
-            <InputTab placeHolderText='Email' value={values.email} onChangeText={handleChange('email')} />
+            <InputTab placeholder='Email' value={values.email} onChangeText={handleChange('email')} />
             {touched.email && errors.email && (<ErrorText errorText='Not a valid email address. Should be your@gmail.com' />)}
 
             <View style={styles.spacer} />

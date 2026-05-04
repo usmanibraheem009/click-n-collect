@@ -2,8 +2,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 
+import addressReducer from "../slices/addressSlice";
 import authReducer from "../slices/authSlice";
 import cartReducer from "../slices/cartSlice";
+import counterReducer from "../slices/counterSlice";
 import favoritesReducer from "../slices/favouriteSlice";
 import imageReducer from "../slices/imageSlice";
 import productReducer from "../slices/productSlice";
@@ -13,7 +15,7 @@ import themeReducer from "../slices/themeSlice";
 const persistConfig = {
   key: "root",
   storage: AsyncStorage,
-  whitelist: ["authReducer", "favoritesReducer", "cartReducer"],
+  whitelist: ["authreducer", "favoritesreducer", "cartreducer"],
 };
 
 const rootReducer = combineReducers({
@@ -24,6 +26,8 @@ const rootReducer = combineReducers({
   cartreducer: cartReducer,
   productsreducer: productReducer,
   snackbarreducer: snackbarReducer,
+  counterreducer: counterReducer,
+  addressreducer: addressReducer,
 });
 
 const persistedReducer =

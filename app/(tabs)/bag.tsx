@@ -2,7 +2,7 @@ import Screen from '@/src/components/layout/screen'
 import ScreenHeader from '@/src/components/layout/screen-header'
 import SimpleButton from '@/src/components/premitives/simple-button'
 import { useTheme } from '@/src/hooks/useTheme'
-import { removeFromCart } from '@/src/redux/slices/cartSlice'
+import { decrementQuantity, incrementQuantity, removeFromCart } from '@/src/redux/slices/cartSlice'
 import { showSnackbar } from '@/src/redux/slices/snackbarSlice'
 import { RootState } from '@/src/redux/store/myStore'
 import { mS, mVs } from '@/src/utils/scale'
@@ -42,10 +42,7 @@ const Bag = () => {
     if (cartItems.length === 0) {
       return Alert.alert('Your bag is empty', 'Please add items before proceeding to checkout.')
     }
-    router.push({
-      pathname: '/screens/check-out',
-      params: { subTotal, shippingFee, Total: grandTotal }
-    })
+    router.push('/screens/check-out')
   }
 
   return (
@@ -90,9 +87,9 @@ const Bag = () => {
                   ${item.price.toFixed(2)}
                 </Text>
                 <View style={styles.counter}>
-                  <Ionicons name='remove-circle-outline' size={mS(26)} color={theme.surface.primary} />
+                  <Ionicons name='remove-circle-outline' size={mS(26)} color={theme.surface.primary} onPress={() => dispatch(decrementQuantity(item.id))} />
                   <Text style={[styles.quantity, { color: theme.text.primary }]}>{item.quantity}</Text>
-                  <Ionicons name='add-circle-outline' size={mS(26)} color={theme.surface.primary} />
+                  <Ionicons name='add-circle-outline' size={mS(26)} color={theme.surface.primary} onPress={() => dispatch(incrementQuantity(item.id))} />
                 </View>
               </View>
 
