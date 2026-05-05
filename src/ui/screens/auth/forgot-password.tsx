@@ -1,4 +1,4 @@
-import ScreenWrapper from '@/src/components/layout/screen-wrapper'
+import KeyboardAvoiding from '@/src/components/layout/keyboard-avoiding'
 import ErrorText from '@/src/components/premitives/error-text'
 import InputTab from '@/src/components/premitives/Input-tab'
 import SimpleButton from '@/src/components/premitives/simple-button'
@@ -40,7 +40,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <ScreenWrapper>
+    <KeyboardAvoiding>
       <AuthHeader headerText='Forgot password' backArrow />
       <Text style={styles.text}>Please enter your email address. You will recieve a link to create a new password via email.</Text>
 
@@ -57,7 +57,7 @@ const ForgotPassword = () => {
         )}
       </Formik>
 
-    </ScreenWrapper>
+    </KeyboardAvoiding>
   )
 }
 

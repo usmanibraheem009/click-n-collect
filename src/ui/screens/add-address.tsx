@@ -5,7 +5,7 @@ import ErrorText from '@/src/components/premitives/error-text'
 import InputTab from '@/src/components/premitives/Input-tab'
 import SimpleButton from '@/src/components/premitives/simple-button'
 import { useTheme } from '@/src/hooks/useTheme'
-import { addOrderAddress, fetchCity, fetchCountries, fetchStates, newAddress } from '@/src/redux/slices/addressSlice'
+import { addAddress, fetchCity, fetchCountries, fetchStates, newAddress } from '@/src/redux/slices/addressSlice'
 import { showSnackbar } from '@/src/redux/slices/snackbarSlice'
 import { AppDispatch, RootState } from '@/src/redux/store/myStore'
 import { initialValues, validationSchema } from '@/src/utils/forms'
@@ -38,12 +38,17 @@ const AddAddress = () => {
         dispatch(fetchCountries());
     }, []);
 
-    const submitFunc = (values: newAddress) => {
-        setLoading(true);
-        dispatch(addOrderAddress(values));
-        setLoading(false);
-        dispatch(showSnackbar({ message: 'Address added successfully!', type: 'success' }));
-        router.back();
+    const submitFunc = async (values: newAddress) => {
+        try {
+            setLoading(true);
+            await dispatch(addAddress(values));
+            dispatch(showSnackbar({ message: 'Address added successfully!', type: 'success' }));
+            router.back();
+        } catch (error) {
+            dispatch(showSnackbar({ message: 'Failed to add address. Try again.', type: 'error' }));
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -56,6 +61,10 @@ const AddAddress = () => {
                 onSubmit={submitFunc}>
                 {({ values, errors, handleChange, touched, setFieldValue, handleSubmit }: any) => (
                     <View>
+
+                        <Text style={[styles.labelText, { color: theme.text.primary }]}>User Name</Text>
+                        <InputTab placeholder='Enter your name' value={values.yourName} onChangeText={handleChange('yourName')} />
+                        {touched.yourName && errors.yourName && <ErrorText errorText={errors.yourName} />}
 
                         <Text style={[styles.labelText, { color: theme.text.primary }]}>Select Country</Text>
                         <Pressable onPress={() => setShowCountry(true)}>

@@ -1,5 +1,8 @@
 import { getCities, getCountries, getState } from "@/src/apis/locationApi";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { auth, db } from "@/src/services/firebaseConfig";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { addDoc, collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+
 
 export const fetchCountries = createAsyncThunk(
     "location/fetchCountries",
@@ -9,7 +12,7 @@ export const fetchCountries = createAsyncThunk(
 );
 
 export const fetchStates = createAsyncThunk(
-    "loaction/fetchStates",
+    "location/fetchStates",
     async (country: string) => {
         return await getState(country);
     }
@@ -19,6 +22,43 @@ export const fetchCity = createAsyncThunk(
     "location/fetchCity",
     async ({ country, state }: { country: string, state: string }) => {
         return await getCities(country, state);
+    }
+);
+
+export const fetchAddresses = createAsyncThunk(
+    "address/fetchAddresses",
+    async () => {
+        const uid = auth.currentUser?.uid;
+        if (!uid) return [];
+
+        const snapshot = await getDocs(collection(db, 'users', uid, 'addresses'));
+
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }
+);
+
+export const addAddress = createAsyncThunk(
+    "address/addAddress",
+    async (values: any) => {
+        const uid = auth.currentUser?.uid;
+        if (!uid) throw Error('Not authtenticated');
+
+        const { id, ...dataToSave } = values;
+        const ref = await addDoc(collection(db, 'users', uid, 'addresses'), dataToSave);
+
+        return { ...dataToSave, id: ref.id }
+    }
+);
+
+export const deleteAddress = createAsyncThunk(
+    "address/deleteAddress",
+    async (addressId: string) => {
+        const uid = auth.currentUser?.uid;
+        if (!uid) throw new Error('Not authenticated');
+
+        await deleteDoc(doc(db, 'users', uid, 'addresses', addressId));
+
+        return addressId;
     }
 );
 
@@ -32,7 +72,8 @@ export interface newAddress {
     city: string,
     streetAddress: string,
     landMark?: string,
-    phoneNumber: string
+    phoneNumber: string,
+    yourName: string
 };
 
 type listState = {
@@ -42,6 +83,8 @@ type listState = {
     city: { label: string, value: string }[],
     loading: boolean,
     phoneNumber: string,
+    yourName: string,
+    error: string | null;
 }
 
 const initialState = {
@@ -51,16 +94,14 @@ const initialState = {
     city: [],
     loading: false,
     phoneNumber: '',
+    error: '',
+    yourName: ''
 } as listState;
 
 const addressSlice = createSlice({
     name: 'addressSlice',
     initialState,
-    reducers: {
-        addOrderAddress: (state, action) => {
-            state.addressList.push({ ...action.payload, id: Date.now() });
-        }
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(fetchCountries.pending, (state) => {
@@ -77,9 +118,27 @@ const addressSlice = createSlice({
                 state.city = action.payload;
                 state.loading = false
             })
+            .addCase(fetchAddresses.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchAddresses.fulfilled, (state, action: PayloadAction<any>) => {
+                state.loading = false;
+                state.addressList = action.payload
+            })
+            .addCase(fetchAddresses.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message ?? 'Failed to fetch addresses';
+            })
+
+        builder.addCase(addAddress.fulfilled, (state, action: PayloadAction<any>) => {
+            state.addressList.push(action.payload);
+        })
+
+        builder.addCase(deleteAddress.fulfilled, (state, action: PayloadAction<any>) => {
+            state.addressList = state.addressList.filter((a) => a.id !== action.payload)
+        })
     },
 });
-
-export const { addOrderAddress } = addressSlice.actions;
 
 export default addressSlice.reducer

@@ -3,6 +3,7 @@ import ScreenHeader from '@/src/components/layout/screen-header'
 import SimpleButton from '@/src/components/premitives/simple-button'
 import { useTheme } from '@/src/hooks/useTheme'
 import { decrementQuantity, incrementQuantity, removeFromCart } from '@/src/redux/slices/cartSlice'
+import { setcartSummary } from '@/src/redux/slices/orderSlice'
 import { showSnackbar } from '@/src/redux/slices/snackbarSlice'
 import { RootState } from '@/src/redux/store/myStore'
 import { mS, mVs } from '@/src/utils/scale'
@@ -42,6 +43,7 @@ const Bag = () => {
     if (cartItems.length === 0) {
       return Alert.alert('Your bag is empty', 'Please add items before proceeding to checkout.')
     }
+    dispatch(setcartSummary({ cartItems, subTotal }));
     router.push('/screens/check-out')
   }
 

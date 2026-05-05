@@ -1,4 +1,4 @@
-import ScreenWrapper from '@/src/components/layout/screen-wrapper'
+import Screen from '@/src/components/layout/screen'
 import SimpleButton from '@/src/components/premitives/simple-button'
 import TabBar from '@/src/components/premitives/tab-bar'
 import UserCard from '@/src/components/premitives/user-card'
@@ -19,7 +19,7 @@ const profile = () => {
   }
 
   return (
-    <ScreenWrapper>
+    <Screen>
       <View style={styles.userCard}>
 
         <UserCard />
@@ -38,7 +38,7 @@ const profile = () => {
       <View style={{ marginTop: 30 }}></View>
 
       <SimpleButton btnText='LOGOUT' onPress={logoutUser} />
-    </ScreenWrapper>
+    </Screen>
   )
 }
 

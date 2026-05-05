@@ -1,37 +1,47 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Animated, Pressable, StyleSheet, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { hideSnackbar } from '../redux/slices/snackbarSlice';
 import { AppDispatch, RootState } from '../redux/store/myStore';
 import { mVs } from './scale';
 
-const colors = {
+const colors: Record<string, string> = {
     success: '#2DC653',
     info: '#F4A261',
     error: '#E63946',
-    null: '#3333'
+    default: '#3333'
 };
 
 const Snackbar = () => {
 
     const dispatch = useDispatch<AppDispatch>();
-    const translateY = new Animated.Value(50);
+    const translateY = useRef(new Animated.Value(50)).current;
     const { message, type, visible } = useSelector((state: RootState) => state.snackbarreducer);
 
     useEffect(() => {
         if (visible) {
+
+            Animated.spring(translateY, {
+                toValue: 0,
+                useNativeDriver: true,
+                tension: 80,
+                friction: 10,
+            }).start();
+
             const timer = setTimeout(() => {
                 dispatch(hideSnackbar());
             }, 3000);
 
             return () => clearTimeout(timer);
+        } else {
+            translateY.setValue(50);
         }
     }, [visible]);
 
     if (!visible) return null;
 
     return (
-        <Animated.View style={[styles.container, { backgroundColor: colors[type], transform: [{ translateY }] }]}>
+        <Animated.View style={[styles.container, { backgroundColor: colors[type] ?? colors.default, transform: [{ translateY }] }]}>
             <Text style={styles.text}>{message}</Text>
             <Pressable onPress={() => { dispatch(hideSnackbar()) }}>
                 <Text style={[styles.dismiss]}>X</Text>
@@ -55,7 +65,7 @@ const styles = StyleSheet.create({
         elevation: 5,
         shadowColor: '#000',
         shadowOpacity: .3,
-        textShadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 2 },
         shadowRadius: 4,
         opacity: .8,
 

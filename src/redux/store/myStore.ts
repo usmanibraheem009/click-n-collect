@@ -8,6 +8,8 @@ import cartReducer from "../slices/cartSlice";
 import counterReducer from "../slices/counterSlice";
 import favoritesReducer from "../slices/favouriteSlice";
 import imageReducer from "../slices/imageSlice";
+import orderReducer from "../slices/orderSlice";
+import paymentRedcer from "../slices/paymentSlice";
 import productReducer from "../slices/productSlice";
 import snackbarReducer from "../slices/snackbarSlice";
 import themeReducer from "../slices/themeSlice";
@@ -28,6 +30,8 @@ const rootReducer = combineReducers({
   snackbarreducer: snackbarReducer,
   counterreducer: counterReducer,
   addressreducer: addressReducer,
+  orderreducer: orderReducer,
+  paymentreducer: paymentRedcer,
 });
 
 const persistedReducer =

@@ -9,7 +9,8 @@ export const initialValues = {
         city: '',
         streetAddress: '',
         type: '' as locationType,
-        phoneNumber: ''
+        phoneNumber: '',
+        yourName: ''
     },
 };
 
@@ -21,5 +22,6 @@ export const validationSchema = {
         streetAddress: Yup.string().required('street address is required'),
         type: Yup.string().required('Address type is required'),
         phoneNumber: Yup.string().required('phone number is required').matches(/^\d{11}$/, 'Phone number must be 11 digits'),
+        yourName: Yup.string().required('Your name is required'),
     }),
 }

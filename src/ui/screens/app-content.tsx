@@ -14,11 +14,11 @@ const AppContent = () => {
     const [splashReady, setSplashReady] = useState(false);
 
     const [fontsLoaded] = useFonts({
-        NotoSerif_400Regular,
-        NotoSerif_500Medium,
-        NotoSerif_600SemiBold,
-        NotoSerif_700Bold,
-        NotoSerif_800ExtraBold
+        regular: NotoSerif_400Regular,
+        medium: NotoSerif_500Medium,
+        semibold: NotoSerif_600SemiBold,
+        bold: NotoSerif_700Bold,
+        extraBold: NotoSerif_800ExtraBold
     })
 
     useEffect(() => {
