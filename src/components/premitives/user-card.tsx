@@ -1,49 +1,23 @@
 import { useTheme } from '@/src/hooks/useTheme';
-import { setImage } from '@/src/redux/slices/imageSlice';
 import { RootState } from '@/src/redux/store/myStore';
-import { db } from '@/src/services/firebaseConfig';
-import { FontAwesome } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import { doc, updateDoc } from 'firebase/firestore';
+import { mS, mVs } from '@/src/utils/scale';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { StyleSheet, Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
 
 
 const UserCard = () => {
-    const profileImageUrl = useSelector((state: RootState) => state.imagereducer.imageUrl);
     const user = useSelector((state: RootState) => state.authreducer.user);
     const { theme } = useTheme();
-    const dispatch = useDispatch();
-
-    const pickImage = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            quality: 0.7,
-            aspect: [1, 1]
-        });
-
-        if (!result.canceled) {
-            dispatch(setImage(result?.assets[0].uri));
-            await updateDoc(doc(db, 'users', user!.id), {
-                profileImage: profileImageUrl
-            });
-        }
-    }
 
     return (
-        <View style={styles.userCard}>
-            <TouchableOpacity style={styles.imageContainer} onPress={pickImage}>
-                {profileImageUrl ? (
-                    <Image source={{ uri: profileImageUrl }} style={styles.image} />
-                ) : (
-                    <View >
-                        <FontAwesome name='camera' size={24} />
-                    </View>
-                )}
-            </TouchableOpacity>
+        <View style={[styles.userCard, { borderColor: theme.border.secondary }]}>
+            <View style={[styles.imageContainer, { backgroundColor: theme.background.secondary }]}>
+                <Ionicons name='person' size={32} color={theme.text.primary} />
+            </View>
             <View>
-                <Text style={{ fontSize: 18, fontWeight: '500', color: theme.text.primary }}>{user?.userName}</Text>
+                <Text style={[styles.userName, { color: theme.text.primary }]}>{user?.userName}</Text>
                 <Text style={{ fontSize: 12, fontWeight: '500', color: theme.text.secondary }}>{user?.email}</Text>
             </View>
         </View>
@@ -56,25 +30,20 @@ const styles = StyleSheet.create({
     userCard: {
         flexDirection: 'row',
         padding: 10,
-        alignItems: 'flex-start',
-        gap: 18
+        alignItems: 'center',
+        gap: mVs(20),
+        borderWidth: 1.5,
+        borderRadius: mS(10),
     },
     imageContainer: {
-        height: 64,
-        width: 64,
-        borderRadius: 50,
+        height: mVs(64),
+        width: mVs(64),
+        borderRadius: mS(50),
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'white'
     },
-    dummy: {
-        backgroundColor: 'white',
-        height: 50,
-        width: 50,
-    },
-    image: {
-        height: 64,
-        width: 64,
-        borderRadius: 50
+    userName: {
+        fontSize: mS(18),
+        fontFamily: 'regular'
     }
 })

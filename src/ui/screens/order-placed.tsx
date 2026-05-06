@@ -1,6 +1,7 @@
 import Screen from '@/src/components/layout/screen'
 import ScreenFooter from '@/src/components/layout/screen-footer'
 import { useTheme } from '@/src/hooks/useTheme'
+import { clearCart } from '@/src/redux/slices/cartSlice'
 import { clearOrderSummary } from '@/src/redux/slices/orderSlice'
 import { AppDispatch } from '@/src/redux/store/myStore'
 import { mS } from '@/src/utils/scale'
@@ -15,6 +16,12 @@ const OrderPlaced = () => {
     const { theme } = useTheme();
     const dispatch = useDispatch<AppDispatch>();
 
+    const handleContinue = () => {
+        dispatch(clearOrderSummary());
+        dispatch(clearCart());
+        router.replace('/(tabs)');
+    }
+
     return (
         <Screen>
             <View style={styles.container}>
@@ -22,7 +29,7 @@ const OrderPlaced = () => {
                 <Text style={[styles.text, { color: theme.text.primary }]}>Your order is confirmed!</Text>
             </View>
 
-            <ScreenFooter buttonText='Continue shopping' onButtonPress={() => { router.replace('/(tabs)'); dispatch(clearOrderSummary()) }} />
+            <ScreenFooter buttonText='Continue shopping' onButtonPress={handleContinue} />
         </Screen>
     )
 }

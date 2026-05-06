@@ -1,56 +1,117 @@
-import Screen from '@/src/components/layout/screen'
-import SimpleButton from '@/src/components/premitives/simple-button'
+import ScreenFooter from '@/src/components/layout/screen-footer'
+import ScreenHeader from '@/src/components/layout/screen-header'
+import ScrollScreen from '@/src/components/layout/scroll-screen'
 import TabBar from '@/src/components/premitives/tab-bar'
 import UserCard from '@/src/components/premitives/user-card'
+import { useTheme } from '@/src/hooks/useTheme'
 import { clearUser } from '@/src/redux/slices/authSlice'
-import { AppDispatch } from '@/src/redux/store/myStore'
+import { AppDispatch, RootState } from '@/src/redux/store/myStore'
 import { logout } from '@/src/services/firebase/auth-services'
+import { mS, mVs } from '@/src/utils/scale'
+import { router } from 'expo-router'
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
-import { useDispatch } from 'react-redux'
+import { Alert, StyleSheet, View } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
 
-const profile = () => {
+const Profile = () => {
 
   const dispatch = useDispatch<AppDispatch>();
+  const { theme } = useTheme();
+  const cartItems = useSelector((state: RootState) => state.cartreducer.cartItems);
+  const addressList = useSelector((state: RootState) => state.addressreducer.addressList);
+  const paymentList = useSelector((state: RootState) => state.paymentreducer.paymentList);
+  const favorites = useSelector((state: RootState) => state.favoritesreducer.favorites);
 
-  const logoutUser = async () => {
-    await logout();
-    dispatch(clearUser());
+  const logoutUser = () => {
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Logout', style: 'destructive', onPress: async () => {
+          await logout();
+          dispatch(clearUser());
+        }
+      }
+    ]);
   }
 
-  return (
-    <Screen>
-      <View style={styles.userCard}>
+  const tabs = [
+    {
+      title: 'My Orders',
+      subTitle: 'Track and manage your orders',
+      icon: 'bag-outline',
+      // onPress: () => router.push('/screens/order-history'),
+    },
+    {
+      title: 'Shipping Address',
+      subTitle: `${addressList.length} saved address${addressList.length !== 1 ? 'es' : ''}`,
+      icon: 'location-outline',
+      onPress: () => router.push('/screens/shipping-addresses'),
+    },
+    {
+      title: 'Payment Methods',
+      subTitle: `${paymentList.length} saved method${paymentList.length !== 1 ? 's' : ''}`,
+      icon: 'card-outline',
+      onPress: () => router.push('/screens/payment-methods'),
+    },
+    {
+      title: 'Wishlist',
+      subTitle: `${favorites.length} saved item${favorites.length !== 1 ? 's' : ''}`,
+      icon: 'heart-outline',
+      onPress: () => router.replace('/(tabs)/favorites'),
+    },
+    {
+      title: 'Promocodes',
+      subTitle: 'View your special promocodes',
+      icon: 'pricetag-outline',
+      onPress: () => { },
+    },
+    {
+      title: 'My Reviews',
+      subTitle: 'Reviews you have written',
+      icon: 'star-outline',
+      onPress: () => { },
+    },
+    {
+      title: 'Settings',
+      subTitle: 'Notifications, password, theme',
+      icon: 'settings-outline',
+      onPress: () => router.push('/screens/settings-screen'),
+    },
+  ];
 
+  return (
+    <>
+      <ScrollScreen paddingHorizontal={mS(20)}>
+        <ScreenHeader title='My Profile' />
         <UserCard />
 
-        <View style={{ marginTop: 30 }}></View>
+        <View style={styles.tabsContainer}>
+          {tabs.map((tab, index) => (
+            <View key={tab.title}>
+              <TabBar
+                title={tab.title}
+                subTitle={tab.subTitle}
+                onPress={() => tab.onPress?.()}
+              />
+            </View>
+          ))}
+        </View>
 
-        <TabBar title='My orders' subTitle='Already have 12 orders' onPress={() => { }} />
-        <TabBar title='Shipping Address' subTitle='3 addresses' onPress={() => { }} />
-        <TabBar title='Payment methods' subTitle='Visa  **34' onPress={() => { }} />
-        <TabBar title='Promocodes' subTitle='You have special promocodes' onPress={() => { }} />
-        <TabBar title='My reveiews' subTitle='Reviews for 4 items' onPress={() => { }} />
-        <TabBar title='Settings' subTitle='Notifications, password' onPress={() => { }} />
+      </ScrollScreen>
 
-      </View>
-
-      <View style={{ marginTop: 30 }}></View>
-
-      <SimpleButton btnText='LOGOUT' onPress={logoutUser} />
-    </Screen>
+      <ScreenFooter buttonText='Logout' onButtonPress={logoutUser} />
+    </>
   )
 }
 
-export default profile
+export default Profile
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  tabsContainer: {
+    marginTop: mVs(20),
   },
-  userCard: {
-
-  }
+  divider: {
+    height: 1,
+    marginHorizontal: mS(4),
+  },
 })
