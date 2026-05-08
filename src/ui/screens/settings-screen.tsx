@@ -65,9 +65,9 @@ const SettingsScreen = () => {
             </View>
 
             <Text style={[styles.labelText, { color: theme.text.primary }]}>Theme</Text>
-            <ThemeButton modeName='Light Mode' isActive={currentMode === 'light' ? true : false} onPress={() => dispatch(setTheme('light'))} />
-            <ThemeButton modeName='Dark Mode' isActive={currentMode === 'dark' ? true : false} onPress={() => dispatch(setTheme('dark'))} />
-            <ThemeButton modeName='System' isActive={currentMode === 'system' ? true : false} onPress={() => dispatch(setTheme('system'))} />
+            <ThemeButton modeName='Light Mode' isActive={currentMode === 'light'} onPress={() => dispatch(setTheme('light'))} />
+            <ThemeButton modeName='Dark Mode' isActive={currentMode === 'dark'} onPress={() => dispatch(setTheme('dark'))} />
+            <ThemeButton modeName='System' isActive={currentMode === 'system'} onPress={() => dispatch(setTheme('system'))} />
 
 
         </ScrollScreen>

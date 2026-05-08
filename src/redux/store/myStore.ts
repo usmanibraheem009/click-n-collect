@@ -12,11 +12,12 @@ import paymentRedcer from "../slices/paymentSlice";
 import productReducer from "../slices/productSlice";
 import snackbarReducer from "../slices/snackbarSlice";
 import themeReducer from "../slices/themeSlice";
+import userReducer from "../slices/userSlice";
 
 const persistConfig = {
   key: "root",
   storage: AsyncStorage,
-  whitelist: ["authreducer", "favoritesreducer", "cartreducer"],
+  whitelist: ["favoritesreducer", "cartreducer"],
 };
 
 const rootReducer = combineReducers({
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   addressreducer: addressReducer,
   orderreducer: orderReducer,
   paymentreducer: paymentRedcer,
+  userreducer: userReducer,
 });
 
 const persistedReducer =

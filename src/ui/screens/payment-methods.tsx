@@ -56,11 +56,7 @@ const PaymentMethods = () => {
             <ScreenHeader backArrow title='Payment methods' />
 
             <FlatList data={paymentList} renderItem={({ item }) => (
-                <Pressable key={item.id} style={[styles.paymentCard, {
-                    borderColor: theme.border.primary,
-                    backgroundColor: theme.surface.secondary,
-                }
-                ]} >
+                <Pressable key={item.id} style={[styles.paymentCard, { borderColor: theme.border.primary, backgroundColor: theme.surface.secondary }]} >
                     <View style={[styles.iconBox, { backgroundColor: theme.background.primary }]}>
                         <Ionicons name={getIcon(item.type) as any} size={mS(22)} color={theme.text.secondary} />
                     </View>
@@ -68,6 +64,9 @@ const PaymentMethods = () => {
                         <Text style={[styles.cardTitle, { color: theme.text.primary }]}>{getLabel(item)}</Text>
                         <Text style={[styles.cardSubtitle, { color: theme.text.secondary }]}>{getSubtitle(item)}</Text>
                     </View>
+                    <Pressable onPress={() => handleDelete(item.id)}>
+                        <Ionicons name='trash-outline' size={mS(24)} color={theme.text.disabled} />
+                    </Pressable>
                 </Pressable>
             )} />
 

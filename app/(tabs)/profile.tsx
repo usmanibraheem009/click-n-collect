@@ -39,7 +39,7 @@ const Profile = () => {
       title: 'My Orders',
       subTitle: 'Track and manage your orders',
       icon: 'bag-outline',
-      // onPress: () => router.push('/screens/order-history'),
+      onPress: () => router.push('/screens/orders-list'),
     },
     {
       title: 'Shipping Address',

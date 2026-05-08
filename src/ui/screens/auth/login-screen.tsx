@@ -1,12 +1,12 @@
+import { loginUser } from '@/src/apis/authApi'
 import KeyboardAvoiding from '@/src/components/layout/keyboard-avoiding'
 import ErrorText from '@/src/components/premitives/error-text'
 import InputTab from '@/src/components/premitives/Input-tab'
 import SimpleButton from '@/src/components/premitives/simple-button'
 import { useTheme } from '@/src/hooks/useTheme'
-import { setAuthChecked, setUser } from '@/src/redux/slices/authSlice'
+import { saveSessionToStore } from '@/src/redux/slices/authSlice'
 import { showSnackbar } from '@/src/redux/slices/snackbarSlice'
 import { AppDispatch } from '@/src/redux/store/myStore'
-import { loginUser } from '@/src/services/firebase/auth-services'
 import { initialValues, validationSchema } from '@/src/utils/auth-form'
 import { mS } from '@/src/utils/scale'
 import { FontAwesome } from '@expo/vector-icons'
@@ -27,16 +27,20 @@ const LoginScreen = () => {
   const submitFunc = async (values: any) => {
     try {
       setLoading(true);
-      const profile = await loginUser({
+      const res = await loginUser({
         email: values.email,
-        password: values.password,
+        password: values.password
       });
       dispatch(showSnackbar({ message: `Welcome back ${values.email}`, type: 'success' }));
-      dispatch(setUser(profile));
-      dispatch(setAuthChecked(true));
-      router.replace('/(tabs)')
+      await saveSessionToStore({
+        accessToken: res.accessToken,
+        refreshToken: res.refreshToken,
+        sessionId: res.sessionId,
+        expiresAt: res.expiresAt,
+      });
+      router.replace('/(tabs)');
     } catch (error: any) {
-      dispatch(showSnackbar({ message: error, type: 'error' }));
+      dispatch(showSnackbar({ message: error.message, type: 'error' }));
     } finally {
       setLoading(false);
     }

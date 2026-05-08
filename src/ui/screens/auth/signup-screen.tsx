@@ -1,12 +1,12 @@
+import { signupUser } from '@/src/apis/authApi'
 import KeyboardAvoiding from '@/src/components/layout/keyboard-avoiding'
 import InputTab from '@/src/components/premitives/Input-tab'
 import ErrorText from '@/src/components/premitives/error-text'
 import SimpleButton from '@/src/components/premitives/simple-button'
 import { useTheme } from '@/src/hooks/useTheme'
-import { setUser } from '@/src/redux/slices/authSlice'
+import { saveSessionToStore } from '@/src/redux/slices/authSlice'
 import { showSnackbar } from '@/src/redux/slices/snackbarSlice'
 import { AppDispatch } from '@/src/redux/store/myStore'
-import { registerUser } from '@/src/services/firebase/auth-services'
 import { initialValues, validationSchema } from '@/src/utils/auth-form'
 import { mS, mVs } from '@/src/utils/scale'
 import { FontAwesome } from '@expo/vector-icons'
@@ -27,18 +27,21 @@ const SignupScreen = () => {
   const submitFunc = async (values: any) => {
     try {
       setLoading(true);
-      const profile = await registerUser({
-        userName: values.name,
+      const res = await signupUser({
+        name: values.name,
         email: values.email,
-        password: values.password,
-        profileImageUrl: ' '
+        password: values.password
       });
       dispatch(showSnackbar({ message: 'User registered successfully', type: 'success' }));
-      dispatch(setUser(profile));
+      await saveSessionToStore({
+        accessToken: res.data.accessToken,
+        refreshToken: res.data.refreshToken,
+        expiresAt: res.data.expiresAt,
+        sessionId: res.data.sessionId,
+      });
       router.replace('/(tabs)');
     } catch (error: any) {
-      dispatch(showSnackbar({ message: error, type: 'error' }));
-      throw error
+      dispatch(showSnackbar({ message: error.message, type: 'error' }));
     } finally {
       setLoading(false)
     }

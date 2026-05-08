@@ -7,7 +7,7 @@ import { AppDispatch, RootState } from '@/src/redux/store/myStore'
 import { mS, mVs } from '@/src/utils/scale'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -24,10 +24,13 @@ const ShippingScreen = () => {
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const selectedAddress = useSelector((state: RootState) => state.orderreducer.address);
 
-    if (!selectedAddress) {
-        router.replace('/screens/check-out');
-        return null;
-    }
+    useEffect(() => {
+        if (!selectedAddress) {
+            router.replace('/screens/check-out');
+        }
+    }, [selectedAddress]);
+
+    if (!selectedAddress) return null;
 
     const handlePressed = () => {
         if (!selectedId) {
@@ -37,7 +40,7 @@ const ShippingScreen = () => {
 
         const selectedMethod = shipmentMethods.find((m) => m.id === selectedId);
         dispatch(setShippingMethod(selectedMethod));
-        router.push('/screens/payment-methods');
+        router.push('/screens/payment-screen');
     }
 
     return (

@@ -1,4 +1,4 @@
-import { setAuthChecked } from "@/src/redux/slices/authSlice";
+import { loadSessionFromStore, setLoggedIn } from "@/src/redux/slices/authSlice";
 import { RootState } from "@/src/redux/store/myStore";
 import { NotoSerif_400Regular, NotoSerif_500Medium, NotoSerif_600SemiBold, NotoSerif_700Bold, NotoSerif_800ExtraBold, useFonts } from '@expo-google-fonts/noto-serif';
 import { router, SplashScreen, Stack } from "expo-router";
@@ -7,46 +7,40 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 
 const AppContent = () => {
-
-    const user = useSelector((state: RootState) => state.authreducer.user);
-    const authChecked = useSelector((state: RootState) => state.authreducer.isAuthChecked);
+    const isLoggedIn = useSelector((state: RootState) => state.authreducer.isLoggedIn);
     const dispatch = useDispatch();
-    const [splashReady, setSplashReady] = useState(false);
+    const [authReady, setAuthReady] = useState(false);
 
     const [fontsLoaded] = useFonts({
         regular: NotoSerif_400Regular,
         medium: NotoSerif_500Medium,
         semibold: NotoSerif_600SemiBold,
         bold: NotoSerif_700Bold,
-        extraBold: NotoSerif_800ExtraBold
-    })
+        extraBold: NotoSerif_800ExtraBold,
+    });
 
     useEffect(() => {
-        const splashTimer = setTimeout(() => {
-            setSplashReady(true);
-        }, 3000);
-
-        dispatch(setAuthChecked(true));
-
-        return () => clearTimeout(splashTimer);
+        const bootstrap = async () => {
+            const hasSession = await loadSessionFromStore();
+            if (hasSession) dispatch(setLoggedIn());
+            setAuthReady(true);
+        };
+        bootstrap();
     }, []);
 
     useEffect(() => {
-        if (!authChecked || !splashReady) return;
+        if (!fontsLoaded || !authReady) return;
 
-        if (user) {
+        SplashScreen.hideAsync();
+
+        if (isLoggedIn) {
             router.replace('/(tabs)');
         } else {
-            router.replace('/screens/signup-screen');
+            router.replace('/screens/login-screen');
         }
-    }, [user, authChecked, splashReady]);
+    }, [fontsLoaded, authReady]);
 
-    useEffect(() => {
-        if (fontsLoaded) {
-            SplashScreen.hideAsync();
-        }
-    }, [fontsLoaded]);
-    if (!fontsLoaded) return null;
+    if (!fontsLoaded || !authReady) return null;
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -56,7 +50,7 @@ const AppContent = () => {
                 <Stack.Screen name="screens" options={{ headerShown: false }} />
             </Stack>
         </GestureHandlerRootView>
-    )
-}
+    );
+};
 
 export default AppContent;

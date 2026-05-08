@@ -18,8 +18,6 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const favorites = useSelector((state: RootState) => state.favoritesreducer.favorites);
   const orderSummary = useSelector((state: RootState) => state.orderreducer);
-  console.log('favorites: ', favorites)
-  console.log('order summary: ', orderSummary)
 
   const fetchData = async () => {
     try {
