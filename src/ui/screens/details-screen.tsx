@@ -1,3 +1,4 @@
+import { getProductById } from '@/src/apis/productApi'
 import ScreenHeader from '@/src/components/layout/screen-header'
 import ScrollScreen from '@/src/components/layout/scroll-screen'
 import ColorModal from '@/src/components/modals/color-modal'
@@ -12,7 +13,7 @@ import { AppDispatch, RootState } from '@/src/redux/store/myStore'
 import { mS, mVs } from '@/src/utils/scale'
 import { Ionicons } from '@expo/vector-icons'
 import { useLocalSearchParams } from 'expo-router'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import StarRating from './review-stars'
@@ -20,19 +21,44 @@ import StarRating from './review-stars'
 const DetailsScreen = () => {
 
     const { theme } = useTheme();
-    const { name, price, category, image, description, id } = useLocalSearchParams();
+    const { id } = useLocalSearchParams();
     const favorites = useSelector((state: RootState) => state.favoritesreducer.favorites);
     const dispatch = useDispatch<AppDispatch>();
 
     const [sizeModalVisible, setSizeModalVisible] = useState(false);
     const [colorModalVisible, setColorModalVisible] = useState(false);
+    const [product, setProduct] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
     const [selectedSize, setSelectedSize] = useState<string | null>(null);
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
-    const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-    const colors = ['Red', 'Blue', 'Green', 'White', 'Black'];
-
     const isFavorite = favorites.some((fav: any) => fav.id == Number(id));
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                setLoading(true);
+
+                const data = await getProductById(id as string);
+                setProduct(data);
+            } catch (error: any) {
+                dispatch(showSnackbar({ message: error.message || 'Failed to fetch product', type: 'error' }));
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProduct();
+    }, [id]);
+
+    const title = product?.title;
+    const price = product?.price;
+    const category = product?.category;
+    const image = product?.image;
+    const description = product?.description;
+    const colors = product?.colors || [];
+    const sizes = product?.sizes || [];
+    const _id = product?._id;
 
     const handleAddToCart = () => {
 
@@ -47,14 +73,14 @@ const DetailsScreen = () => {
     };
 
     const productItem = {
-        id: Number(id),
-        title: name,
-        category: category,
-        color: selectedColor,
-        size: selectedSize,
-        price: Number(price),
-        image: image,
-        description: description
+        _id: Number(product?._id) ?? '',
+        title: product?.title ?? '',
+        category: product?.category ?? '',
+        color: product?.selectedColor ?? '',
+        size: product?.selectedSize ?? '',
+        price: Number(product?.price) ?? '',
+        image: product?.image ?? '',
+        description: product?.description ?? ''
     }
 
 
@@ -69,7 +95,7 @@ const DetailsScreen = () => {
             <View style={styles.details}>
                 <View style={{ gap: mVs(5) }}>
                     <Text style={[styles.categoryText, { color: theme.text.secondary }]}>{category}</Text>
-                    <Text style={[styles.title, { color: theme.text.primary }]} numberOfLines={2}>{name}</Text>
+                    <Text style={[styles.title, { color: theme.text.primary }]} numberOfLines={2}>{title ?? ''}</Text>
                     <StarRating onRate={(value: any) => { console.log('user rated: ', value) }} />
                 </View>
                 <Text style={[styles.title, { color: theme.text.secondary }]}>{price}$</Text>

@@ -2,25 +2,16 @@ import { useTheme } from '@/src/hooks/useTheme'
 import { addToCart } from '@/src/redux/slices/cartSlice'
 import { toggleFavorites } from '@/src/redux/slices/favouriteSlice'
 import { AppDispatch, RootState } from '@/src/redux/store/myStore'
+import { Product } from '@/src/types/product'
 import { mS, mVs } from '@/src/utils/scale'
 import { Fontisto, Ionicons } from '@expo/vector-icons'
 import React from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 
-type product = {
-    id: number,
-    title: string,
-    category: string,
-    price: number,
-    image: string,
-    color: string,
-    size: string,
-};
-
 type Props = {
-    item: product,
-    onPress: (item: product) => void,
+    item: Product,
+    onPress: (item: Product) => void,
     showDetails?: boolean,
     showCartButton?: boolean
 }
@@ -30,7 +21,7 @@ const ProductCard: React.FC<Props> = ({ item, onPress, showDetails = false, show
     const favorites = useSelector((state: RootState) => state.favoritesreducer.favorites);
     const dispatch = useDispatch<AppDispatch>();
     const { theme } = useTheme();
-    const isFavorite = favorites.some((fav: any) => fav.id == item.id);
+    const isFavorite = favorites.some((fav: any) => fav.id == item._id);
 
     const handleFavoriteToggle = () => dispatch(toggleFavorites(item));
     const handleAddToCart = () => dispatch(addToCart(item));
@@ -41,7 +32,7 @@ const ProductCard: React.FC<Props> = ({ item, onPress, showDetails = false, show
             activeOpacity={0.9}
         >
             <View style={[styles.imageContainer, { backgroundColor: theme.surface.secondary }]}>
-                <Image source={{ uri: item.image }} style={styles.imageStyle} />
+                <Image source={{ uri: item.image || 'https://via.placeholder.com/300' }} style={styles.imageStyle} />
 
                 {showCartButton ? (
                     <TouchableOpacity style={[styles.fvrtBtn, { backgroundColor: theme.background.primary }]}
@@ -67,7 +58,7 @@ const ProductCard: React.FC<Props> = ({ item, onPress, showDetails = false, show
             </View>
 
             <View style={styles.infoContainer}>
-                <Text style={[styles.categoryText, { color: theme.text.disabled }]} numberOfLines={1}>{item.category.toUpperCase()}</Text>
+                <Text style={[styles.categoryText, { color: theme.text.disabled }]} numberOfLines={1}>{item.category?.toUpperCase() || 'unknown'}</Text>
 
                 <Text style={[styles.titleText, { color: theme.text.primary }]} numberOfLines={2} ellipsizeMode="tail">{item.title} </Text>
 
@@ -75,11 +66,11 @@ const ProductCard: React.FC<Props> = ({ item, onPress, showDetails = false, show
                     <View style={styles.details}>
                         <View style={styles.detailRow}>
                             <Text style={[styles.detailLabel, { color: theme.text.disabled }]}>Color</Text>
-                            <Text style={[styles.detailValue, { color: theme.text.primary }]}>{item.color}</Text>
+                            <Text style={[styles.detailValue, { color: theme.text.primary }]}>{item.colors}</Text>
                         </View>
                         <View style={styles.detailRow}>
                             <Text style={[styles.detailLabel, { color: theme.text.disabled }]}>Size</Text>
-                            <Text style={[styles.detailValue, { color: theme.text.primary }]}>{item.size}</Text>
+                            <Text style={[styles.detailValue, { color: theme.text.primary }]}>{item.sizes}</Text>
                         </View>
                     </View>
                 )}

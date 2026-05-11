@@ -1,66 +1,49 @@
+import { getGroupedProducts } from '@/src/apis/productApi'
 import LoadingIndicator from '@/src/components/layout/loading-indicator'
 import Screen from '@/src/components/layout/screen'
 import ProductCard from '@/src/components/premitives/product-card'
 import { useTheme } from '@/src/hooks/useTheme'
-import { setProductsByCategory } from '@/src/redux/slices/productSlice'
 import { showSnackbar } from '@/src/redux/slices/snackbarSlice'
-import { AppDispatch, RootState } from '@/src/redux/store/myStore'
-import { getCategories, getProductsByCategory } from '@/src/services/api/product-api'
+import { AppDispatch } from '@/src/redux/store/myStore'
+import { ProductSection } from '@/src/types/product'
 import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { FlatList, SectionList, StyleSheet, Text, View } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 const Index = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [sections, setSections] = useState<any[]>([]);
+  const [sections, setSections] = useState<ProductSection[]>([]);
   const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
-  const favorites = useSelector((state: RootState) => state.favoritesreducer.favorites);
-  const orderSummary = useSelector((state: RootState) => state.orderreducer);
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const cats = await getCategories();
-      const sectionsData = [];
 
-      for (let cat of cats) {
-        const products = await getProductsByCategory(cat);
-        dispatch(setProductsByCategory({ category: cat, products }));
+      const groupedProducts = await getGroupedProducts();
+      setSections(groupedProducts);
 
-        sectionsData.push({
-          title: cat,
-          data: products,
-        });
-      }
-
-      setSections(sectionsData);
     } catch (error: any) {
-      dispatch(showSnackbar({ message: error, type: 'error' }));
+      dispatch(showSnackbar({ message: error.message || 'Failed to fetch products', type: 'error' }));
     } finally {
       setLoading(false);
     }
   };
 
+  const handleSubmit = (id: string) => router.push({
+    pathname: '/screens/details-screen',
+    params: {
+      id: id,
+    }
+  })
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  const handleSubmit = (attributes: any) => router.push({
-    pathname: '/screens/details-screen',
-    params: {
-      id: attributes.id,
-      name: attributes.title,
-      price: attributes.price,
-      category: attributes.category,
-      image: attributes.image,
-      description: attributes.description
-    }
-  })
-
   const renderCategoryItems = ({ item }: any) => (
-    <ProductCard item={item} onPress={handleSubmit} />
+    <ProductCard item={item} onPress={() => handleSubmit(item._id)} />
   )
 
   const renderSection = ({ section }: any) => (
@@ -68,7 +51,7 @@ const Index = () => {
       <Text style={[styles.sectionHeader, { backgroundColor: theme.background.primary, color: theme.text.primary }]}>{(section.title)}</Text>
       <FlatList
         data={section.data}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item._id.toString()}
         renderItem={renderCategoryItems}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -87,7 +70,7 @@ const Index = () => {
     <Screen>
       <SectionList
         sections={sections}
-        keyExtractor={(item, index) => item.id.toString() + index}
+        keyExtractor={(item, index) => item._id.toString() + index}
         renderItem={() => null}
         renderSectionHeader={renderSection}
         stickySectionHeadersEnabled={false}

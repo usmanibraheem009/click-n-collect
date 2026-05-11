@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 
 
 const UserCard = () => {
-    const user = useSelector((state: RootState) => state.authreducer.user);
+    const user = useSelector((state: RootState) => state.userreducer.user);
     const { theme } = useTheme();
 
     return (
@@ -17,7 +17,7 @@ const UserCard = () => {
                 <Ionicons name='person' size={32} color={theme.text.primary} />
             </View>
             <View>
-                <Text style={[styles.userName, { color: theme.text.primary }]}>{user?.name}</Text>
+                <Text style={[styles.userName, { color: theme.text.primary }]}>{user?.fullName}</Text>
                 <Text style={{ fontSize: 12, fontWeight: '500', color: theme.text.secondary }}>{user?.email}</Text>
             </View>
         </View>

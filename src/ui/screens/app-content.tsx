@@ -1,4 +1,6 @@
+import { fetchCurrentUser } from "@/src/apis/authApi";
 import { loadSessionFromStore, setLoggedIn } from "@/src/redux/slices/authSlice";
+import { setUser } from "@/src/redux/slices/userSlice";
 import { RootState } from "@/src/redux/store/myStore";
 import { NotoSerif_400Regular, NotoSerif_500Medium, NotoSerif_600SemiBold, NotoSerif_700Bold, NotoSerif_800ExtraBold, useFonts } from '@expo-google-fonts/noto-serif';
 import { router, SplashScreen, Stack } from "expo-router";
@@ -23,6 +25,8 @@ const AppContent = () => {
         const bootstrap = async () => {
             const hasSession = await loadSessionFromStore();
             if (hasSession) dispatch(setLoggedIn());
+            const currentUser = await fetchCurrentUser();
+            dispatch(setUser(currentUser));
             setAuthReady(true);
         };
         bootstrap();
@@ -36,7 +40,7 @@ const AppContent = () => {
         if (isLoggedIn) {
             router.replace('/(tabs)');
         } else {
-            router.replace('/screens/login-screen');
+            router.replace('/screens/signup-screen');
         }
     }, [fontsLoaded, authReady]);
 

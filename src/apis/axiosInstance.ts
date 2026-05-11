@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { router } from 'expo-router';
-import SecureStore from 'expo-secure-store';
+import * as SecureStore from 'expo-secure-store';
 import { clearSessionFromStore } from '../redux/slices/authSlice';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://192.168.97.94:5000/api',
+    baseURL: 'http://192.168.97.87:5000/api',
     headers: {
         "Content-Type": "application/json",
     },
@@ -44,7 +44,7 @@ const refreshAccessToken = async (): Promise<string> => {
 
     if (!sessionId || !refreshToken) throw new Error('Session not found');
 
-    const res = await axiosInstance.post('http://192.168.97.94:5000/api/auth/token/refresh', { sessionId, refreshToken });
+    const res = await axiosInstance.post('http://192.168.97.87:5000/api/auth/token/refresh', { sessionId, refreshToken });
 
     const data = res.data.data;
 

@@ -31,6 +31,13 @@ const AuthSlice = createSlice({
 
 
 export const saveSessionToStore = async (session: Session) => {
+    console.log('saving session:', {
+        accessToken: typeof session.accessToken,
+        refreshToken: typeof session.refreshToken,
+        expiresAt: typeof session.expiresAt,
+        sessionId: typeof session.sessionId,
+        values: session
+    });
     await Promise.all([
         SecureStore.setItemAsync('accessToken', session.accessToken || ''),
         SecureStore.setItemAsync('refreshToken', session.refreshToken || ''),

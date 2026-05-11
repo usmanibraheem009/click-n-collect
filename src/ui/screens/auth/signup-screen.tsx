@@ -1,11 +1,12 @@
-import { signupUser } from '@/src/apis/authApi'
+import { fetchCurrentUser, signupUser } from '@/src/apis/authApi'
 import KeyboardAvoiding from '@/src/components/layout/keyboard-avoiding'
 import InputTab from '@/src/components/premitives/Input-tab'
 import ErrorText from '@/src/components/premitives/error-text'
 import SimpleButton from '@/src/components/premitives/simple-button'
 import { useTheme } from '@/src/hooks/useTheme'
-import { saveSessionToStore } from '@/src/redux/slices/authSlice'
+import { saveSessionToStore, setLoggedIn } from '@/src/redux/slices/authSlice'
 import { showSnackbar } from '@/src/redux/slices/snackbarSlice'
+import { setUser } from '@/src/redux/slices/userSlice'
 import { AppDispatch } from '@/src/redux/store/myStore'
 import { initialValues, validationSchema } from '@/src/utils/auth-form'
 import { mS, mVs } from '@/src/utils/scale'
@@ -25,6 +26,7 @@ const SignupScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const submitFunc = async (values: any) => {
+
     try {
       setLoading(true);
       const res = await signupUser({
@@ -32,13 +34,16 @@ const SignupScreen = () => {
         email: values.email,
         password: values.password
       });
-      dispatch(showSnackbar({ message: 'User registered successfully', type: 'success' }));
       await saveSessionToStore({
         accessToken: res.data.accessToken,
         refreshToken: res.data.refreshToken,
         expiresAt: res.data.expiresAt,
         sessionId: res.data.sessionId,
       });
+      dispatch(setLoggedIn());
+      const currentUser = await fetchCurrentUser();
+      dispatch(setUser(currentUser));
+      dispatch(showSnackbar({ message: 'User registered successfully', type: 'success' }));
       router.replace('/(tabs)');
     } catch (error: any) {
       dispatch(showSnackbar({ message: error.message, type: 'error' }));
@@ -70,7 +75,7 @@ const SignupScreen = () => {
               <FontAwesome name='long-arrow-right' size={25} color={theme.surface.primary} />
             </TouchableOpacity>
 
-            <SimpleButton btnText='SIGN UP' onPress={handleSubmit} />
+            <SimpleButton btnText='SIGN UP' onPress={handleSubmit} isLoading={loading} />
           </View>
         )}
       </Formik>

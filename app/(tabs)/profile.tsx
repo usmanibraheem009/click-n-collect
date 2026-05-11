@@ -1,12 +1,13 @@
+import { logoutUser } from '@/src/apis/authApi'
 import ScreenFooter from '@/src/components/layout/screen-footer'
 import ScreenHeader from '@/src/components/layout/screen-header'
 import ScrollScreen from '@/src/components/layout/scroll-screen'
 import TabBar from '@/src/components/premitives/tab-bar'
 import UserCard from '@/src/components/premitives/user-card'
 import { useTheme } from '@/src/hooks/useTheme'
-import { clearUser } from '@/src/redux/slices/authSlice'
+import { setLoggedOut } from '@/src/redux/slices/authSlice'
+import { clearUser } from '@/src/redux/slices/userSlice'
 import { AppDispatch, RootState } from '@/src/redux/store/myStore'
-import { logout } from '@/src/services/firebase/auth-services'
 import { mS, mVs } from '@/src/utils/scale'
 import { router } from 'expo-router'
 import React from 'react'
@@ -22,13 +23,15 @@ const Profile = () => {
   const paymentList = useSelector((state: RootState) => state.paymentreducer.paymentList);
   const favorites = useSelector((state: RootState) => state.favoritesreducer.favorites);
 
-  const logoutUser = () => {
+  const logout = () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Logout', style: 'destructive', onPress: async () => {
-          await logout();
+          await logoutUser();
           dispatch(clearUser());
+          dispatch(setLoggedOut());
+          router.replace('/screens/signup-screen');
         }
       }
     ]);
@@ -99,7 +102,7 @@ const Profile = () => {
 
       </ScrollScreen>
 
-      <ScreenFooter buttonText='Logout' onButtonPress={logoutUser} />
+      <ScreenFooter buttonText='Logout' onButtonPress={logout} />
     </>
   )
 }

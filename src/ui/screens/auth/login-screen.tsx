@@ -1,11 +1,12 @@
-import { loginUser } from '@/src/apis/authApi'
+import { fetchCurrentUser, loginUser } from '@/src/apis/authApi'
 import KeyboardAvoiding from '@/src/components/layout/keyboard-avoiding'
 import ErrorText from '@/src/components/premitives/error-text'
 import InputTab from '@/src/components/premitives/Input-tab'
 import SimpleButton from '@/src/components/premitives/simple-button'
 import { useTheme } from '@/src/hooks/useTheme'
-import { saveSessionToStore } from '@/src/redux/slices/authSlice'
+import { saveSessionToStore, setLoggedIn } from '@/src/redux/slices/authSlice'
 import { showSnackbar } from '@/src/redux/slices/snackbarSlice'
+import { setUser } from '@/src/redux/slices/userSlice'
 import { AppDispatch } from '@/src/redux/store/myStore'
 import { initialValues, validationSchema } from '@/src/utils/auth-form'
 import { mS } from '@/src/utils/scale'
@@ -31,15 +32,20 @@ const LoginScreen = () => {
         email: values.email,
         password: values.password
       });
-      dispatch(showSnackbar({ message: `Welcome back ${values.email}`, type: 'success' }));
       await saveSessionToStore({
         accessToken: res.accessToken,
         refreshToken: res.refreshToken,
         sessionId: res.sessionId,
         expiresAt: res.expiresAt,
       });
+      dispatch(setLoggedIn());
+      const currentUser = await fetchCurrentUser();
+      dispatch(setUser(currentUser));
+      dispatch(showSnackbar({ message: `Welcome back ${values.email}`, type: 'success' }));
       router.replace('/(tabs)');
     } catch (error: any) {
+      console.log("login error: ", error);
+
       dispatch(showSnackbar({ message: error.message, type: 'error' }));
     } finally {
       setLoading(false);
