@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import { jwtDecode } from 'jwt-decode';
 import { LoginRequest, LoginResponse, LoginSession, SignupRequest, User } from "../utils/types";
 import axiosInstance from "./axiosInstance";
 
@@ -30,29 +31,34 @@ export const signupUser = async (data: SignupRequest): Promise<LoginResponse> =>
         await saveSession(session);
         return response.data;
     } catch (error: any) {
-        const serverMessage =
-            error.response?.data?.message ||
-            error.response?.data?.error ||
-            error.message ||
-            "Registration failed";
-
-        throw new Error(serverMessage);
+        if (error.response) {
+            throw new Error(error.response.data?.message || 'Sign up failed')
+        } else {
+            throw new Error('Network error')
+        }
     }
 };
 
 export const loginUser = async (data: LoginRequest): Promise<LoginSession> => {
     try {
         const response = await axiosInstance.post<LoginResponse>("/auth/login", data);
+
         await saveSession(response.data.data);
-        return response.data.data;
+        const session = response.data.data;
+
+        await SecureStore.setItemAsync('accessToken', session.accessToken);
+
+        axiosInstance.defaults.headers.common.Authorization =
+            `Bearer ${session.accessToken}`;
+        return session;
     } catch (error: any) {
-        throw error.message || "Login failed";
+        throw new Error(error.message || error.response?.data?.message || "Login failed");
     }
 };
 
 export const fetchCurrentUser = async (): Promise<User | null> => {
     try {
-        const accessToken = await SecureStore.getItemAsync(String('accessToken'));
+        const accessToken = await SecureStore.getItemAsync('accessToken');
         if (!accessToken) return null;
 
         const response = await axiosInstance.get("/auth/me");
@@ -70,5 +76,24 @@ export const logoutUser = async () => {
         await SecureStore.deleteItemAsync('sessionId');
     } catch (error) {
         console.error("Error clearing session: ", error);
+    }
+};
+
+type decodedToken = {
+    exp: number;
+};
+
+export const isTokenExpired = async () => {
+    const token = await SecureStore.getItemAsync('accessToken');
+
+    if (!token) return true;
+
+    try {
+        const decoded = jwtDecode<decodedToken>(token);
+
+        const expiryTime = decoded.exp * 1000;
+        return Date.now() >= expiryTime;
+    } catch (error) {
+        return true;
     }
 };

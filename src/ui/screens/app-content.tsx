@@ -1,4 +1,5 @@
 import { fetchCurrentUser } from "@/src/apis/authApi";
+import { initI18n } from "@/src/locales/i18n";
 import { loadSessionFromStore, setLoggedIn } from "@/src/redux/slices/authSlice";
 import { setUser } from "@/src/redux/slices/userSlice";
 import { RootState } from "@/src/redux/store/myStore";
@@ -10,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const AppContent = () => {
     const isLoggedIn = useSelector((state: RootState) => state.authreducer.isLoggedIn);
+    const role = useSelector((state: RootState) => state.userreducer.role);
     const dispatch = useDispatch();
     const [authReady, setAuthReady] = useState(false);
 
@@ -29,6 +31,7 @@ const AppContent = () => {
             dispatch(setUser(currentUser));
             setAuthReady(true);
         };
+        initI18n();
         bootstrap();
     }, []);
 
@@ -37,10 +40,15 @@ const AppContent = () => {
 
         SplashScreen.hideAsync();
 
-        if (isLoggedIn) {
-            router.replace('/(tabs)');
-        } else {
+        if (!isLoggedIn) {
             router.replace('/screens/signup-screen');
+            return;
+        };
+
+        if (role === 'ADMIN') {
+            router.replace('/(drawer)');
+        } else {
+            router.replace('/(tabs)');
         }
     }, [fontsLoaded, authReady]);
 
@@ -51,6 +59,7 @@ const AppContent = () => {
             <Stack>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
                 <Stack.Screen name="screens" options={{ headerShown: false }} />
             </Stack>
         </GestureHandlerRootView>

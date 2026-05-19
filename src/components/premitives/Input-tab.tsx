@@ -34,6 +34,7 @@ const InputTab = ({ icon, placeholder, value, multiline = false, numberOfLines, 
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         {...props}
+        secureTextEntry={isPasswordField && !isPasswordVisible}
       />
       {isPasswordField && (
         <TouchableOpacity onPress={() => { setIsPasswordVisible(prev => !prev) }} style={styles.iconContainer}>

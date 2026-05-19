@@ -7,7 +7,7 @@ import { useTheme } from '@/src/hooks/useTheme'
 import { saveSessionToStore, setLoggedIn } from '@/src/redux/slices/authSlice'
 import { showSnackbar } from '@/src/redux/slices/snackbarSlice'
 import { setUser } from '@/src/redux/slices/userSlice'
-import { AppDispatch } from '@/src/redux/store/myStore'
+import { AppDispatch, RootState } from '@/src/redux/store/myStore'
 import { initialValues, validationSchema } from '@/src/utils/auth-form'
 import { mS } from '@/src/utils/scale'
 import { FontAwesome } from '@expo/vector-icons'
@@ -15,7 +15,7 @@ import { router } from 'expo-router'
 import { Formik } from 'formik'
 import React, { useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import AuthFooter from '../../components/auth-footer'
 import AuthHeader from '../../components/auth-header'
 
@@ -24,6 +24,7 @@ const LoginScreen = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(false);
+  const { role } = useSelector((state: RootState) => state.userreducer || {});
 
   const submitFunc = async (values: any) => {
     try {
@@ -42,7 +43,11 @@ const LoginScreen = () => {
       const currentUser = await fetchCurrentUser();
       dispatch(setUser(currentUser));
       dispatch(showSnackbar({ message: `Welcome back ${values.email}`, type: 'success' }));
-      router.replace('/(tabs)');
+      if (currentUser?.role === 'ADMIN') {
+        router.replace('/(drawer)');
+      } else {
+        router.replace('/(tabs)');
+      }
     } catch (error: any) {
       console.log("login error: ", error);
 
