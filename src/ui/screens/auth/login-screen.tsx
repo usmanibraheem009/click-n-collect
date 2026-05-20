@@ -4,9 +4,8 @@ import ErrorText from '@/src/components/premitives/error-text'
 import InputTab from '@/src/components/premitives/Input-tab'
 import SimpleButton from '@/src/components/premitives/simple-button'
 import { useTheme } from '@/src/hooks/useTheme'
-import { saveSessionToStore, setLoggedIn } from '@/src/redux/slices/authSlice'
+import { saveSessionToStore } from '@/src/redux/slices/authSlice'
 import { showSnackbar } from '@/src/redux/slices/snackbarSlice'
-import { setUser } from '@/src/redux/slices/userSlice'
 import { AppDispatch, RootState } from '@/src/redux/store/myStore'
 import { initialValues, validationSchema } from '@/src/utils/auth-form'
 import { mS } from '@/src/utils/scale'
@@ -24,27 +23,24 @@ const LoginScreen = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(false);
-  const { role } = useSelector((state: RootState) => state.userreducer || {});
+  const { role } = useSelector((state: RootState) => state.userreducer);
 
   const submitFunc = async (values: any) => {
     try {
       setLoading(true);
-      const res = await loginUser({
-        email: values.email,
-        password: values.password
-      });
+      const res = await loginUser({ email: values.email, password: values.password });
+
       await saveSessionToStore({
         accessToken: res.accessToken,
         refreshToken: res.refreshToken,
         sessionId: res.sessionId,
         expiresAt: res.expiresAt,
+        isLoggedIn: true
       });
-      dispatch(setLoggedIn());
-      const currentUser = await fetchCurrentUser();
-      dispatch(setUser(currentUser));
+      const user = await dispatch(fetchCurrentUser()).unwrap();
       dispatch(showSnackbar({ message: `Welcome back ${values.email}`, type: 'success' }));
-      if (currentUser?.role === 'ADMIN') {
-        router.replace('/(drawer)');
+      if (user.role === 'ADMIN') {
+        router.replace('/(admin)');
       } else {
         router.replace('/(tabs)');
       }

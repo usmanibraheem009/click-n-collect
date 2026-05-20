@@ -6,7 +6,6 @@ import TabBar from '@/src/components/premitives/tab-bar'
 import UserCard from '@/src/components/premitives/user-card'
 import { useTheme } from '@/src/hooks/useTheme'
 import { setLoggedOut } from '@/src/redux/slices/authSlice'
-import { clearUser } from '@/src/redux/slices/userSlice'
 import { AppDispatch, RootState } from '@/src/redux/store/myStore'
 import { mS, mVs } from '@/src/utils/scale'
 import { router } from 'expo-router'
@@ -29,7 +28,6 @@ const Profile = () => {
       {
         text: 'Logout', style: 'destructive', onPress: async () => {
           await logoutUser();
-          dispatch(clearUser());
           dispatch(setLoggedOut());
           router.replace('/screens/signup-screen');
         }

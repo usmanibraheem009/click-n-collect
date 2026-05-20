@@ -1,15 +1,14 @@
 import axios from 'axios';
-import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { clearSessionFromStore } from '../redux/slices/authSlice';
+import { clearSessionFromStore, setLoggedOut } from '../redux/slices/authSlice';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://192.168.97.98:5000/api',
+    baseURL: 'http://192.168.99.9:5000/api',
     headers: {
         "Content-Type": "application/json",
     },
     timeout: 10000,
-    withCredentials: true
+    // withCredentials: true
 });
 
 let _store: any;
@@ -44,7 +43,7 @@ const refreshAccessToken = async (): Promise<string> => {
 
     if (!sessionId || !refreshToken) throw new Error('Session not found');
 
-    const res = await axiosInstance.post('http://192.168.97.98:5000/api/auth/token/refresh', { sessionId, refreshToken });
+    const res = await axiosInstance.post('http://192.168.99.9:5000/api/auth/token/refresh', { sessionId, refreshToken });
 
     const data = res.data.data;
 
@@ -83,7 +82,7 @@ axiosInstance.interceptors.response.use(
             } catch (error) {
                 processQueue(error);
                 await clearSessionFromStore();
-                router.replace('/screens/login-screen');
+                _store.dispatch(setLoggedOut())
                 return Promise.reject(error);
             } finally {
                 isRefreshing = false;

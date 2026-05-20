@@ -1,33 +1,37 @@
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import * as SecureStore from 'expo-secure-store';
 import { jwtDecode } from 'jwt-decode';
-import { LoginRequest, LoginResponse, LoginSession, SignupRequest, User } from "../utils/types";
+import { LoginRequest, LoginResponse, LoginSession, SignupRequest, User } from '../utils/types';
 import axiosInstance from "./axiosInstance";
 
-type sessionTokens = {
+type SessionTokens = {
     accessToken: string;
     refreshToken: string;
-    sessionId: string;
     expiresAt: string;
+    sessionId: string;
 };
 
-export const saveSession = async (session: sessionTokens) => {
+export const saveSession = async (session: SessionTokens) => {
     await Promise.all([
         SecureStore.setItemAsync('accessToken', session.accessToken),
         SecureStore.setItemAsync('refreshToken', session.refreshToken),
         SecureStore.setItemAsync('expiresAt', session.expiresAt),
         SecureStore.setItemAsync('sessionId', session.sessionId),
-    ])
+    ]);
 };
+
 
 export const signupUser = async (data: SignupRequest): Promise<LoginResponse> => {
     try {
-        const response = await axiosInstance.post("/auth/register", data);
+        const response = await axiosInstance.post('/auth/register', data);
+
         const session = {
             accessToken: response.data.data.accessToken,
             refreshToken: response.data.data.refreshToken,
-            sessionId: response.data.data.sessionId,
-            expiresAt: response.data.data.expiresAt
-        }
+            expiresAt: response.data.data.expiresAt,
+            sessionId: response.data.data.sessionId
+        };
+
         await saveSession(session);
         return response.data;
     } catch (error: any) {
@@ -39,49 +43,74 @@ export const signupUser = async (data: SignupRequest): Promise<LoginResponse> =>
     }
 };
 
-export const loginUser = async (data: LoginRequest): Promise<LoginSession> => {
-    try {
-        const response = await axiosInstance.post<LoginResponse>("/auth/login", data);
 
-        await saveSession(response.data.data);
+export const loginUser = async (data: LoginRequest): Promise<LoginSession> => {
+
+    try {
+        const response = await axiosInstance.post<LoginResponse>('/auth/login', data);
+
         const session = response.data.data;
+
+        console.log("LOGIN RESPONSE:", session);
 
         await SecureStore.setItemAsync('accessToken', session.accessToken);
 
+        const savedToken = await SecureStore.getItemAsync('accessToken');
+
+        console.log("TOKEN AFTER SAVE:", savedToken);
+
         axiosInstance.defaults.headers.common.Authorization =
             `Bearer ${session.accessToken}`;
+
+        console.log(
+            "GLOBAL HEADER TOKEN SET"
+        );
+
+
         return session;
+
     } catch (error: any) {
-        throw new Error(error.message || error.response?.data?.message || "Login failed");
+        console.log(
+            'Login API Error:',
+            error?.response?.data || error.message
+        );
+
+        throw new Error(
+            error?.response?.data?.message ||
+            'Invalid credentials'
+        );
     }
 };
 
-export const fetchCurrentUser = async (): Promise<User | null> => {
-    try {
-        const accessToken = await SecureStore.getItemAsync('accessToken');
-        if (!accessToken) return null;
+export const fetchCurrentUser = createAsyncThunk<User, void, { rejectValue: string }>(
+    'user/fetchCurrentUser',
+    async (_, thunkAPI) => {
+        try {
+            const response = await axiosInstance.get('/auth/me');
+            console.log("fetched current user: ", response.data.data);
+            return response.data.data;
 
-        const response = await axiosInstance.get("/auth/me");
-        return response.data.data;
-    } catch (error: any) {
-        throw new Error(error.response?.data?.message || error.message || "Login failed");
-    }
-};
+        } catch (error: any) {
 
-export const logoutUser = async () => {
-    try {
-        await SecureStore.deleteItemAsync('accessToken');
-        await SecureStore.deleteItemAsync('refreshToken');
-        await SecureStore.deleteItemAsync('expiresAt');
-        await SecureStore.deleteItemAsync('sessionId');
-    } catch (error) {
-        console.error("Error clearing session: ", error);
+            console.log("FETCH USER ERROR:", {
+                message: error.message,
+                response: error.response,
+                status: error.response?.status,
+                data: error.response?.data
+            });
+
+            return thunkAPI.rejectWithValue(
+                error.response?.data?.message ||
+                error.message ||
+                'failed to fetch current user'
+            );
+        }
     }
-};
+);
 
 type decodedToken = {
-    exp: number;
-};
+    exp: number,
+}
 
 export const isTokenExpired = async () => {
     const token = await SecureStore.getItemAsync('accessToken');
@@ -97,3 +126,12 @@ export const isTokenExpired = async () => {
         return true;
     }
 };
+
+export const logoutUser = async () => {
+    try {
+        const res = await axiosInstance.post('/auth/me');
+        return res.data.data;
+    } catch (error: any) {
+        console.log("logout error: ", error);
+    }
+}

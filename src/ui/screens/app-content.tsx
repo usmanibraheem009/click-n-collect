@@ -1,19 +1,21 @@
-import { fetchCurrentUser } from "@/src/apis/authApi";
-import { initI18n } from "@/src/locales/i18n";
-import { loadSessionFromStore, setLoggedIn } from "@/src/redux/slices/authSlice";
-import { setUser } from "@/src/redux/slices/userSlice";
+import useBootstrapAuth from "@/src/hooks/useBootstrapAuth";
 import { RootState } from "@/src/redux/store/myStore";
 import { NotoSerif_400Regular, NotoSerif_500Medium, NotoSerif_600SemiBold, NotoSerif_700Bold, NotoSerif_800ExtraBold, useFonts } from '@expo-google-fonts/noto-serif';
-import { router, SplashScreen, Stack } from "expo-router";
-import { useEffect, useState } from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useDispatch, useSelector } from "react-redux";
+import { router, Stack } from "expo-router";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const AppContent = () => {
-    const isLoggedIn = useSelector((state: RootState) => state.authreducer.isLoggedIn);
-    const role = useSelector((state: RootState) => state.userreducer.role);
-    const dispatch = useDispatch();
-    const [authReady, setAuthReady] = useState(false);
+
+    const { bootstrapping } = useBootstrapAuth();
+
+    const { isLoggedIn } = useSelector(
+        (state: RootState) => state.authreducer
+    );
+
+    const user = useSelector(
+        (state: RootState) => state.userreducer.user
+    );
 
     const [fontsLoaded] = useFonts({
         regular: NotoSerif_400Regular,
@@ -24,46 +26,36 @@ const AppContent = () => {
     });
 
     useEffect(() => {
-        const bootstrap = async () => {
-            const hasSession = await loadSessionFromStore();
-            if (hasSession) dispatch(setLoggedIn());
-            const currentUser = await fetchCurrentUser();
-            dispatch(setUser(currentUser));
-            setAuthReady(true);
-        };
-        initI18n();
-        bootstrap();
-    }, []);
 
-    useEffect(() => {
-        if (!fontsLoaded || !authReady) return;
-
-        SplashScreen.hideAsync();
+        if (!fontsLoaded || bootstrapping) return;
 
         if (!isLoggedIn) {
-            router.replace('/screens/signup-screen');
+            router.replace('/screens/login-screen');
             return;
-        };
+        }
 
-        if (role === 'ADMIN') {
-            router.replace('/(drawer)');
+        if (!user) return;
+
+        if (user.role === 'ADMIN') {
+            router.replace('/(admin)');
         } else {
             router.replace('/(tabs)');
         }
-    }, [fontsLoaded, authReady]);
 
-    if (!fontsLoaded || !authReady) return null;
+    }, [fontsLoaded, bootstrapping, isLoggedIn, user]);
+
+    if (!fontsLoaded || bootstrapping) {
+        return null;
+    }
 
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <Stack>
-                <Stack.Screen name="index" options={{ headerShown: false }} />
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-                <Stack.Screen name="screens" options={{ headerShown: false }} />
-            </Stack>
-        </GestureHandlerRootView>
+        <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="(admin)" />
+            <Stack.Screen name="screens" />
+        </Stack>
     );
 };
 
-export default AppContent;
+export default AppContent

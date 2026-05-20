@@ -1,12 +1,13 @@
 import { logoutUser } from '@/src/apis/authApi'
+import ReportCard from '@/src/components/admin/report-card'
+import DashHeader from '@/src/components/layout/dash-header'
 import Screen from '@/src/components/layout/screen'
-import SimpleButton from '@/src/components/premitives/simple-button'
 import { useTheme } from '@/src/hooks/useTheme'
 import { mS } from '@/src/utils/scale'
 import { router } from 'expo-router'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { StyleSheet, Text } from 'react-native'
+import { StyleSheet } from 'react-native'
 
 const index = () => {
 
@@ -19,8 +20,9 @@ const index = () => {
 
     return (
         <Screen paddingHorizontal={mS(16)}>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', color: theme.text.primary }}>{t('greetings.morning')}</Text>
-            <SimpleButton btnText='Logout' onPress={logout} />
+            <DashHeader />
+
+            <ReportCard label='net sales' heading={`$ 17000`} />
         </Screen>
     )
 }
